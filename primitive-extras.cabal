@@ -52,7 +52,7 @@ library
     PrimitiveExtras.Types
   build-depends:
     base >=4.7 && <5,
-    deferred-folds >=0.5 && <0.6,
+    deferred-folds >=0.6 && <0.7,
     foldl >=1 && <2,
     primitive >=0.6.4 && <0.7,
     profunctors >=5 && <6
