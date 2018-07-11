@@ -14,7 +14,7 @@ primMultiArrayIndices (PrimMultiArray ua) =
 
 primMultiArrayAt :: Prim prim => PrimMultiArray prim -> Int -> Unfold prim
 primMultiArrayAt (PrimMultiArray ua) index =
-  B.at ua index empty primArrayPrims
+  B.at ua index empty primArray
 
-primArrayPrims :: Prim prim => PrimArray prim -> Unfold prim
-primArrayPrims ba = Unfold $ \f z -> foldlPrimArray' f z ba
+primArray :: Prim prim => PrimArray prim -> Unfold prim
+primArray ba = Unfold $ \f z -> foldlPrimArray' f z ba

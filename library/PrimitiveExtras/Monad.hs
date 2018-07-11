@@ -7,7 +7,7 @@ import qualified PrimitiveExtras.Fold as A
 
 
 {-| Given a size of the outer array and a function, which executes a fold over indexed elements in a monad,
-constructs a multi prim array -}
+constructs a prim multi-array -}
 primMultiArray :: (Monad m, Prim element) => Int -> (forall x. Fold (Int, element) x -> m x) -> m (PrimMultiArray element)
 primMultiArray outerArraySize runFold =
   do
