@@ -4,4 +4,4 @@ where
 import PrimitiveExtras.Prelude
 
 
-newtype MultiPrimArray a = MultiPrimArray (UnliftedArray (PrimArray a))
+newtype PrimMultiArray a = PrimMultiArray (UnliftedArray (PrimArray a))

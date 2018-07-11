@@ -8,8 +8,8 @@ import qualified PrimitiveExtras.Fold as A
 
 {-| Given a size of the outer array and a function, which executes a fold over indexed elements in a monad,
 constructs a multi prim array -}
-multiPrimArray :: (Monad m, Prim element) => Int -> (forall x. Fold (Int, element) x -> m x) -> m (MultiPrimArray element)
-multiPrimArray outerArraySize runFold =
+primMultiArray :: (Monad m, Prim element) => Int -> (forall x. Fold (Int, element) x -> m x) -> m (PrimMultiArray element)
+primMultiArray outerArraySize runFold =
   do
     indexCounts <- runFold (lmap fst (A.indexCounts outerArraySize))
-    runFold (A.multiPrimArray (indexCounts :: PrimArray Word32))
+    runFold (A.primMultiArray (indexCounts :: PrimArray Word32))

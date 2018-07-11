@@ -1,6 +1,6 @@
 module PrimitiveExtras.Data
 (
-  MultiPrimArray
+  PrimMultiArray
 )
 where
 

@@ -2,7 +2,7 @@ module PrimitiveExtras.Fold
 (
   indexCounts,
   unliftedArray,
-  multiPrimArray,
+  primMultiArray,
 )
 where
 
@@ -57,8 +57,8 @@ construct a fold over indexed elements into a multi-array of elements.
 
 Thus it allows to construct it in two passes over the indexed elements.
 -}
-multiPrimArray :: forall size element. (Integral size, Prim size, Prim element) => PrimArray size -> Fold (Int, element) (MultiPrimArray element)
-multiPrimArray sizeArray =
+primMultiArray :: forall size element. (Integral size, Prim size, Prim element) => PrimArray size -> Fold (Int, element) (PrimMultiArray element)
+primMultiArray sizeArray =
   unsafeDupableIO step init extract
   where
     outerLength = sizeofPrimArray sizeArray
@@ -85,4 +85,4 @@ multiPrimArray sizeArray =
         frozenInnerArray <- unsafeFreezePrimArray mutableInnerArray
         writeUnliftedArray copied outerIndex frozenInnerArray
       result <- unsafeFreezeUnliftedArray copied
-      return $ MultiPrimArray $ result
+      return $ PrimMultiArray $ result

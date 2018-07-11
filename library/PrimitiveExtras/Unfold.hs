@@ -8,12 +8,12 @@ import qualified PrimitiveExtras.Fold as A
 import qualified PrimitiveExtras.UnliftedArray as B
 
 
-multiPrimArrayIndices :: MultiPrimArray a -> Unfold Int
-multiPrimArrayIndices (MultiPrimArray ua) =
+primMultiArrayIndices :: PrimMultiArray a -> Unfold Int
+primMultiArrayIndices (PrimMultiArray ua) =
   intsInRange 0 (pred (sizeofUnliftedArray ua))
 
-multiPrimArrayAt :: Prim prim => MultiPrimArray prim -> Int -> Unfold prim
-multiPrimArrayAt (MultiPrimArray ua) index =
+primMultiArrayAt :: Prim prim => PrimMultiArray prim -> Int -> Unfold prim
+primMultiArrayAt (PrimMultiArray ua) index =
   B.at ua index empty primArrayPrims
 
 primArrayPrims :: Prim prim => PrimArray prim -> Unfold prim
