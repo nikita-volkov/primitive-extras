@@ -1,4 +1,9 @@
 module PrimitiveExtras.Folds
+(
+  indexCounts,
+  unliftedArray,
+  multiPrimArray,
+)
 where
 
 import PrimitiveExtras.Prelude hiding (fold, foldM)
@@ -17,6 +22,10 @@ unsafeDupableIO stepInIO initInIO extractInIO =
 foldMInUnsafeDupableIO :: FoldM IO input output -> Fold input output
 foldMInUnsafeDupableIO (FoldM step init extract) = unsafeDupableIO step init extract
 
+{-|
+Given a size of the array,
+construct a fold, which produces an array of index counts.
+-}
 indexCounts :: (Integral count, Prim count) => Int {-^ Array size -} -> Fold Int (PrimArray count)
 indexCounts size = unsafeDupableIO step init extract where
   init = unsafeThawPrimArray (replicatePrimArray size 0)
@@ -45,6 +54,8 @@ unliftedArray size =
 Having a priorly computed array of inner dimension sizes,
 e.g., using the 'indexCounts' fold,
 construct a fold over indexed elements into a multi-array of elements.
+
+Thus it allows to construct it in two passes over the indexed elements.
 -}
 multiPrimArray :: forall size element. (Integral size, Prim size, Prim element) => PrimArray size -> Fold (Int, element) (MultiPrimArray element)
 multiPrimArray sizeArray =
