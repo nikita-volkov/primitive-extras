@@ -71,26 +71,6 @@ import Text.Printf as Exports (printf, hPrintf)
 import Text.Read as Exports (Read(..), readMaybe, readEither)
 import Unsafe.Coerce as Exports
 
--- contravariant
--------------------------
-import Data.Functor.Contravariant as Exports
-import Data.Functor.Contravariant.Divisible as Exports
-
--- pointed
--------------------------
-import Data.Pointed as Exports
-import Data.Copointed as Exports
-
--- profunctors
--------------------------
-import Data.Profunctor.Unsafe as Exports
-import Data.Profunctor.Choice as Exports
-import Data.Profunctor.Strong as Exports
-
--- semigroupoids
--------------------------
-import Data.Semigroupoid as Exports
-
 -- deferred-folds
 -------------------------
 import DeferredFolds.Unfold as Exports (Unfold(..))

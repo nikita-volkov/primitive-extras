@@ -49,17 +49,7 @@ library
     PrimitiveExtras.UnliftedArray.Potoki.Consume
   build-depends:
     base >=4.7 && <5,
-    cereal >=0.5.5 && <0.6,
-    containers >=0.5 && <0.6,
-    contravariant >=1.4 && <2,
     deferred-folds >=0.4.1 && <0.5,
     foldl >=1 && <2,
-    hashable >=1 && <2,
-    pointed >=5 && <6,
-    potoki >=2 && <2.1,
-    potoki-cereal >=0.2.1.1 && <0.3,
     potoki-core >=2.2 && <2.3,
-    primitive >=0.6.4 && <0.7,
-    profunctors >=5 && <6,
-    semigroupoids >=5.2 && <6,
-    unordered-containers >=0.2.9 && <0.3
+    primitive >=0.6.4 && <0.7

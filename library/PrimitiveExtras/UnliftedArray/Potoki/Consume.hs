@@ -2,7 +2,6 @@ module PrimitiveExtras.UnliftedArray.Potoki.Consume
 where
 
 import PrimitiveExtras.Prelude
-import Potoki.Consume
 import Potoki.Core.Consume
 import qualified Potoki.Core.Fetch as A
 
