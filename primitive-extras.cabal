@@ -39,15 +39,16 @@ library
   default-language:
     Haskell2010
   exposed-modules:
-    PrimitiveExtras.Unfold
-    PrimitiveExtras.Fold
     PrimitiveExtras.MultiPrimArray
     PrimitiveExtras.UnliftedArray
   other-modules:
+    PrimitiveExtras.Unfold
+    PrimitiveExtras.Fold
     PrimitiveExtras.Prelude
     PrimitiveExtras.Types
   build-depends:
     base >=4.7 && <5,
     deferred-folds >=0.4.1 && <0.5,
     foldl >=1 && <2,
-    primitive >=0.6.4 && <0.7
+    primitive >=0.6.4 && <0.7,
+    profunctors >=5 && <6
