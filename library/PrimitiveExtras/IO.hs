@@ -39,3 +39,31 @@ replicateArray size elementIO =
             loop (succ index)
           else unsafeFreezeArray array
       in loop 0
+
+generatePrimArray :: Prim a => Int -> (Int -> IO a) -> IO (PrimArray a)
+generatePrimArray size elementIO =
+  do
+    array <- newPrimArray size
+    let
+      loop index =
+        if index < size
+          then do
+            element <- elementIO index
+            writePrimArray array index element
+            loop (succ index)
+          else unsafeFreezePrimArray array
+      in loop 0
+
+replicatePrimArray :: Prim a => Int -> IO a -> IO (PrimArray a)
+replicatePrimArray size elementIO =
+  do
+    array <- newPrimArray size
+    let
+      loop index =
+        if index < size
+          then do
+            element <- elementIO
+            writePrimArray array index element
+            loop (succ index)
+          else unsafeFreezePrimArray array
+      in loop 0
