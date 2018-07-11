@@ -39,8 +39,8 @@ library
   default-language:
     Haskell2010
   exposed-modules:
-    PrimitiveExtras.Unfolds
-    PrimitiveExtras.Folds
+    PrimitiveExtras.Unfold
+    PrimitiveExtras.Fold
     PrimitiveExtras.MultiPrimArray
     PrimitiveExtras.UnliftedArray
   other-modules:

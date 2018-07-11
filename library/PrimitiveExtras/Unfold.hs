@@ -1,10 +1,10 @@
-module PrimitiveExtras.Unfolds
+module PrimitiveExtras.Unfold
 where
 
 import PrimitiveExtras.Prelude hiding (fold)
 import PrimitiveExtras.Types
 import DeferredFolds.Unfold
-import qualified PrimitiveExtras.Folds as A
+import qualified PrimitiveExtras.Fold as A
 import qualified PrimitiveExtras.UnliftedArray as B
 
 
