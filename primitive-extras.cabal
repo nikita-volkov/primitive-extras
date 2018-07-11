@@ -43,6 +43,7 @@ library
     PrimitiveExtras.Monad
     PrimitiveExtras.IO
     PrimitiveExtras.Unfold
+    PrimitiveExtras.UnfoldM
     PrimitiveExtras.Fold
     PrimitiveExtras.Pure
   other-modules:
