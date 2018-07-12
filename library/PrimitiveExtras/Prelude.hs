@@ -2,6 +2,7 @@ module PrimitiveExtras.Prelude
 (
   module Exports,
   Product2(..),
+  modifyTVar',
   forMToZero_,
   forMFromZero_,
 )
@@ -93,6 +94,12 @@ import Control.Monad.Primitive as Exports
 
 
 data Product2 a b = Product2 !a !b
+
+{-# INLINE modifyTVar' #-}
+modifyTVar' :: TVar a -> (a -> a) -> STM ()
+modifyTVar' var f = do
+    x <- readTVar var
+    writeTVar var $! f x
 
 {-# INLINE forMToZero_ #-}
 forMToZero_ :: Applicative m => Int -> (Int -> m a) -> m ()
