@@ -6,11 +6,17 @@ import PrimitiveExtras.Types
 import qualified PrimitiveExtras.UnliftedArray as A
 
 
+-- * UnliftedArray
+-------------------------
+
 generateUnliftedArray :: PrimUnlifted a => Int -> (Int -> IO a) -> IO (UnliftedArray a)
 generateUnliftedArray = A.generate
 
 replicateUnliftedArray :: PrimUnlifted a => Int -> IO a -> IO (UnliftedArray a)
 replicateUnliftedArray = A.replicateIO
+
+-- * Array
+-------------------------
 
 generateArray :: Int -> (Int -> IO a) -> IO (Array a)
 generateArray size elementIO =
@@ -39,6 +45,9 @@ replicateArray size elementIO =
             loop (succ index)
           else unsafeFreezeArray array
       in loop 0
+
+-- * PrimArray
+-------------------------
 
 generatePrimArray :: Prim a => Int -> (Int -> IO a) -> IO (PrimArray a)
 generatePrimArray size elementIO =
