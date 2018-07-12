@@ -116,3 +116,25 @@ traversePrimArrayWithIndexConcurrently primArray threadsAmount action =
                 activeThreads <- readTVar semaphore
                 guard (activeThreads == 0)
 
+-- * TVarArray
+-------------------------
+
+newTVarArray :: a -> Int -> IO (TVarArray a)
+newTVarArray a size = TVarArray <$> replicateArray size (newTVarIO a)
+
+freezeTVarArrayAsPrimArray :: Prim a => TVarArray a -> IO (PrimArray a)
+freezeTVarArrayAsPrimArray (TVarArray varArray) =
+  do
+    let size = sizeofArray varArray
+    mpa <- newPrimArray size
+    forMFromZero_ size $ \ index -> do
+      var <- indexArrayM varArray index
+      value <- atomically (readTVar var)
+      writePrimArray mpa index value
+    unsafeFreezePrimArray mpa
+
+modifyTVarArrayAt :: TVarArray a -> Int -> (a -> a) -> IO ()
+modifyTVarArrayAt (TVarArray array) index fn =
+  do
+    var <- indexArrayM array index
+    atomically $ modifyTVar' var fn
