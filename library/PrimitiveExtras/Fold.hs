@@ -12,22 +12,22 @@ import Control.Foldl
 import qualified PrimitiveExtras.UnliftedArray as UA
 
 
-unsafeDupableIO :: (state -> input -> IO state) -> IO state -> (state -> IO output) -> Fold input output
-unsafeDupableIO stepInIO initInIO extractInIO =
+unsafeIO :: (state -> input -> IO state) -> IO state -> (state -> IO output) -> Fold input output
+unsafeIO stepInIO initInIO extractInIO =
   Fold
     (\ !state input -> unsafeDupablePerformIO (stepInIO state input))
     (unsafeDupablePerformIO initInIO)
-    (\ state -> let !output = unsafeDupablePerformIO (extractInIO state) in output)
+    (\ state -> let !output = unsafePerformIO (extractInIO state) in output)
 
 foldMInUnsafeDupableIO :: FoldM IO input output -> Fold input output
-foldMInUnsafeDupableIO (FoldM step init extract) = unsafeDupableIO step init extract
+foldMInUnsafeDupableIO (FoldM step init extract) = unsafeIO step init extract
 
 {-|
 Given a size of the array,
 construct a fold, which produces an array of index counts.
 -}
 indexCounts :: (Integral count, Prim count) => Int {-^ Array size -} -> Fold Int (PrimArray count)
-indexCounts size = unsafeDupableIO step init extract where
+indexCounts size = unsafeIO step init extract where
   init = unsafeThawPrimArray (replicatePrimArray size 0)
   step mutable i = do
     count <- readPrimArray mutable i
@@ -41,7 +41,7 @@ index vector of produced elements to be within the specified amount.
 -}
 unliftedArray :: PrimUnlifted element => Int {-^ Size of the array -} -> Fold (Int, element) (UnliftedArray element)
 unliftedArray size =
-  unsafeDupableIO step init extract
+  unsafeIO step init extract
   where
     step mutable (index, element) =
       writeUnliftedArray mutable index element $> mutable
@@ -59,7 +59,7 @@ Thus it allows to construct it in two passes over the indexed elements.
 -}
 primMultiArray :: forall size element. (Integral size, Prim size, Prim element) => PrimArray size -> Fold (Int, element) (PrimMultiArray element)
 primMultiArray sizeArray =
-  unsafeDupableIO step init extract
+  unsafeIO step init extract
   where
     outerLength = sizeofPrimArray sizeArray
     init =
