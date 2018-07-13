@@ -6,7 +6,11 @@ import PrimitiveExtras.Types
 import DeferredFolds.Unfold
 import qualified PrimitiveExtras.Fold as A
 import qualified PrimitiveExtras.UnliftedArray as B
+import qualified PrimitiveExtras.UnfoldM as C
 
+
+primMultiArrayAssocs :: Prim a => PrimMultiArray a -> Unfold (Int, a)
+primMultiArrayAssocs = unfoldM . C.primMultiArrayAssocs
 
 primMultiArrayIndices :: PrimMultiArray a -> Unfold Int
 primMultiArrayIndices (PrimMultiArray ua) =

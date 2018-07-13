@@ -8,6 +8,13 @@ import qualified PrimitiveExtras.Fold as A
 import qualified PrimitiveExtras.UnliftedArray as B
 
 
+primMultiArrayAssocs :: (Monad m, Prim a) => PrimMultiArray a -> UnfoldM m (Int, a)
+primMultiArrayAssocs pma =
+  do
+    index <- primMultiArrayIndices pma
+    element <- primMultiArrayAt pma index
+    return (index, element)
+
 primMultiArrayIndices :: Monad m => PrimMultiArray a -> UnfoldM m Int
 primMultiArrayIndices (PrimMultiArray ua) =
   intsInRange 0 (pred (sizeofUnliftedArray ua))
