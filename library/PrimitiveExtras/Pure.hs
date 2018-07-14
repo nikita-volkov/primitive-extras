@@ -3,7 +3,8 @@ where
 
 import PrimitiveExtras.Prelude
 import PrimitiveExtras.Types
-import qualified PrimitiveExtras.UnliftedArray as A
+import qualified Data.Vector.Unboxed as A
+import qualified Data.Vector.Primitive as B
 
 
 {-| Get length of the outer dimension of a primitive multi array -}
@@ -20,3 +21,11 @@ oneHotPrimArray size index value =
 primArrayByteArray :: PrimArray a -> ByteArray
 primArrayByteArray (PrimArray unliftedByteArray) =
   ByteArray unliftedByteArray
+
+primArrayPrimitiveVector :: Prim a => PrimArray a -> B.Vector a
+primArrayPrimitiveVector primArray =
+  B.Vector 0 (sizeofPrimArray primArray) (primArrayByteArray primArray)
+
+primArrayUnboxedVector :: Prim a => PrimArray a -> A.Vector a
+primArrayUnboxedVector primArray =
+  unsafeCoerce (primArrayPrimitiveVector primArray)
