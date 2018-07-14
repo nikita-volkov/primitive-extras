@@ -16,3 +16,7 @@ oneHotPrimArray size index value =
     marr <- newPrimArray size
     writePrimArray marr index value
     unsafeFreezePrimArray marr
+
+primArrayByteArray :: PrimArray a -> ByteArray
+primArrayByteArray (PrimArray unliftedByteArray) =
+  ByteArray unliftedByteArray
