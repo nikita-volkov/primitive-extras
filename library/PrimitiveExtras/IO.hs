@@ -90,15 +90,15 @@ traversePrimArrayWithIndexInRange primArray from to action =
 -------------------------
 
 newTVarArray :: a -> Int -> IO (TVarArray a)
-newTVarArray a size = TVarArray <$> replicateArray size (newTVarIO a)
+newTVarArray a size = TVarArray <$> replicateUnliftedArray size (newTVarIO a)
 
 freezeTVarArrayAsPrimArray :: Prim a => TVarArray a -> IO (PrimArray a)
 freezeTVarArrayAsPrimArray (TVarArray varArray) =
   do
-    let size = sizeofArray varArray
+    let size = sizeofUnliftedArray varArray
     mpa <- newPrimArray size
     forMFromZero_ size $ \ index -> do
-      var <- indexArrayM varArray index
+      var <- indexUnliftedArrayM varArray index
       value <- atomically (readTVar var)
       writePrimArray mpa index value
     unsafeFreezePrimArray mpa
@@ -106,5 +106,5 @@ freezeTVarArrayAsPrimArray (TVarArray varArray) =
 modifyTVarArrayAt :: TVarArray a -> Int -> (a -> a) -> IO ()
 modifyTVarArrayAt (TVarArray array) index fn =
   do
-    var <- indexArrayM array index
+    var <- indexUnliftedArrayM array index
     atomically $ modifyTVar' var fn
