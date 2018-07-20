@@ -25,3 +25,14 @@ primMultiArrayAt (PrimMultiArray ua) index =
 
 primArray :: (Monad m, Prim prim) => PrimArray prim -> UnfoldM m prim
 primArray ba = UnfoldM $ \f z -> foldlPrimArrayM' f z ba
+
+smallArrayElements :: Monad m => SmallArray e -> UnfoldM m e
+smallArrayElements array = UnfoldM $ \ step initialState -> let
+  !size = sizeofSmallArray array
+  iterate index !state = if index < size
+    then do
+      element <- indexSmallArrayM array index
+      newState <- step state element
+      iterate (succ index) newState
+    else return state
+  in iterate 0 initialState
