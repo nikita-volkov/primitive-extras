@@ -39,6 +39,9 @@ library
   default-language:
     Haskell2010
   exposed-modules:
+    PrimitiveExtras.Bitmap
+    PrimitiveExtras.SmallArray
+    PrimitiveExtras.SparseSmallArray
     PrimitiveExtras.Data
     PrimitiveExtras.Monad
     PrimitiveExtras.IO
