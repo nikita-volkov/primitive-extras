@@ -42,20 +42,14 @@ library
     PrimitiveExtras.Bitmap
     PrimitiveExtras.SmallArray
     PrimitiveExtras.SparseSmallArray
-    PrimitiveExtras.Data
-    PrimitiveExtras.Monad
-    PrimitiveExtras.IO
-    PrimitiveExtras.Unfold
-    PrimitiveExtras.UnfoldM
-    PrimitiveExtras.Fold
-    PrimitiveExtras.Pure
-    PrimitiveExtras.Cereal.Get
-    PrimitiveExtras.Cereal.Put
-  other-modules:
+    PrimitiveExtras.TVarArray
+    PrimitiveExtras.PrimArray
     PrimitiveExtras.UnliftedArray
+    PrimitiveExtras.PrimMultiArray
+  other-modules:
     PrimitiveExtras.Prelude
     PrimitiveExtras.Types
-    PrimitiveExtras.Instances
+    PrimitiveExtras.Folds
   build-depends:
     base >=4.7 && <5,
     cereal >=0.5.5 && <0.6,

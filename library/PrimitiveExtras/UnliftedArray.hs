@@ -11,6 +11,7 @@ at ua index none some =
     then none
     else some (indexUnliftedArray ua index)
 
+{-# INLINABLE replicateIO #-}
 replicateIO :: PrimUnlifted a => Int -> IO a -> IO (UnliftedArray a)
 replicateIO size elementIO =
   do
@@ -25,6 +26,7 @@ replicateIO size elementIO =
           else unsafeFreezeUnliftedArray array
       in loop 0
 
+{-# INLINABLE generate #-}
 generate :: PrimUnlifted a => Int -> (Int -> IO a) -> IO (UnliftedArray a)
 generate size elementIO =
   do
@@ -38,3 +40,15 @@ generate size elementIO =
             loop (succ index)
           else unsafeFreezeUnliftedArray array
       in loop 0
+
+traverse_ :: (Monad m, PrimUnlifted a) => (a -> m ()) -> UnliftedArray a -> m ()
+traverse_ action array =
+  let
+    size = sizeofUnliftedArray array
+    iterate index = if index < size
+      then do
+        element <- indexUnliftedArrayM array index
+        action element
+        iterate (succ index)
+      else return ()
+    in iterate 0

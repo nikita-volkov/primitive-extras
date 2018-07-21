@@ -1,4 +1,4 @@
-module PrimitiveExtras.Fold
+module PrimitiveExtras.Folds
 (
   indexCounts,
   unliftedArray,
