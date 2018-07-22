@@ -92,6 +92,10 @@ import Control.Foldl as Exports (Fold(..), FoldM(..))
 import Data.Primitive as Exports
 import Control.Monad.Primitive as Exports
 
+-- focus
+-------------------------
+import Focus as Exports (Focus(..))
+
 
 data Product2 a b = Product2 !a !b
 

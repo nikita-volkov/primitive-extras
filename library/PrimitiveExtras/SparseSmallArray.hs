@@ -9,6 +9,7 @@ module PrimitiveExtras.SparseSmallArray
   lookup,
   elementsUnfold,
   elementsUnfoldM,
+  onElementAtFocus,
 )
 where
 
@@ -16,6 +17,7 @@ import PrimitiveExtras.Prelude hiding (lookup, empty, insert)
 import PrimitiveExtras.Types
 import qualified PrimitiveExtras.Bitmap as Bitmap
 import qualified PrimitiveExtras.SmallArray as SmallArray
+import qualified Focus
 
 
 {-# INLINE empty #-}
@@ -77,3 +79,37 @@ elementsUnfold (SparseSmallArray _ array) = Unfold (\ f z -> foldl' f z array)
 {-# INLINE elementsUnfoldM #-}
 elementsUnfoldM :: Monad m => SparseSmallArray a -> UnfoldM m a
 elementsUnfoldM (SparseSmallArray _ array) = SmallArray.elementsUnfoldM array
+
+{-# INLINABLE onElementAtFocus #-}
+onElementAtFocus :: Monad m => Int -> Focus a m b -> Focus (SparseSmallArray a) m b
+onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa where
+  concealSsa = fmap (fmap aChangeToSsaChange) concealA where
+    aChangeToSsaChange = \ case
+      Focus.Leave -> Focus.Leave
+      Focus.Set a -> Focus.Set (SparseSmallArray (Bitmap.singleton index) (pure a))
+      Focus.Remove -> Focus.Leave
+  revealSsa (SparseSmallArray indices array) =
+    fmap (fmap aChangeToSsaChange) $
+    if Bitmap.isPopulated index indices 
+      then do
+        a <- indexSmallArrayM array (Bitmap.populatedIndex index indices)
+        revealA a
+      else concealA
+    where
+      aChangeToSsaChange = \ case
+        Focus.Leave -> Focus.Leave
+        Focus.Set a -> if Bitmap.isPopulated index indices
+          then let
+            newArray = SmallArray.set index a array
+            in Focus.Set (SparseSmallArray indices newArray)
+          else let
+            newIndices = Bitmap.insert index indices
+            newArray = SmallArray.insert index a array
+            in Focus.Set (SparseSmallArray newIndices newArray)
+        Focus.Remove -> let
+          newIndices = Bitmap.invert index indices
+          in if Bitmap.null newIndices
+            then Focus.Remove
+            else let
+              newArray = SmallArray.unset index array
+              in Focus.Set (SparseSmallArray newIndices newArray)

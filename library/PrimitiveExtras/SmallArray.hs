@@ -3,6 +3,7 @@ where
 
 import PrimitiveExtras.Prelude
 import PrimitiveExtras.Types
+import qualified Focus
 
 
 {-# INLINE empty #-}
@@ -121,3 +122,25 @@ elementsUnfoldM array = UnfoldM $ \ step initialState -> let
       iterate (succ index) newState
     else return state
   in iterate 0 initialState
+
+{-# INLINABLE onFoundElementFocus #-}
+onFoundElementFocus :: (Monad m, Eq a) => (a -> Bool) -> Focus a m b -> Focus (SmallArray a) m b
+onFoundElementFocus testA (Focus concealA revealA) = Focus concealArray revealArray where
+  concealArray = fmap (fmap arrayChange) concealA where
+    arrayChange = \ case
+      Focus.Set newValue -> Focus.Set (pure newValue)
+      _ -> Focus.Leave
+  revealArray array = case findWithIndex testA array of
+    Just (index, value) -> fmap (fmap arrayChange) (revealA value) where
+      arrayChange = \ case
+        Focus.Leave -> Focus.Leave
+        Focus.Set newValue -> if newValue == value
+          then Focus.Leave
+          else Focus.Set (set index newValue array)
+        Focus.Remove -> if sizeofSmallArray array > 1
+          then Focus.Set (unset index array)
+          else Focus.Remove
+    Nothing -> fmap (fmap arrayChange) concealA where
+      arrayChange = \ case
+        Focus.Set newValue -> Focus.Set (cons newValue array)
+        _ -> Focus.Leave
