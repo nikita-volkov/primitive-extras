@@ -6,7 +6,9 @@ module PrimitiveExtras.SparseSmallArray
   pair,
   insert,
   replace,
+  unset,
   lookup,
+  maybeList,
   elementsUnfold,
   elementsUnfoldM,
   onElementAtFocus,
@@ -63,6 +65,20 @@ replace i e (SparseSmallArray b a) =
     in SparseSmallArray b (SmallArray.set sparseIndex e a)
 
 -- |
+-- Remove an element.
+{-# INLINE unset #-}
+unset :: Int -> SparseSmallArray e -> SparseSmallArray e
+unset i (SparseSmallArray b a) =
+  {-# SCC "unset" #-} 
+  if Bitmap.isPopulated i b
+    then
+      let 
+        b' = Bitmap.invert i b
+        a' = SmallArray.unset i a
+        in SparseSmallArray b' a'
+    else SparseSmallArray b a
+
+-- |
 -- Lookup an item at the index.
 {-# INLINE lookup #-}
 lookup :: Int -> SparseSmallArray e -> Maybe e
@@ -71,6 +87,14 @@ lookup i (SparseSmallArray b a) =
   if Bitmap.isPopulated i b
     then Just (indexSmallArray a (Bitmap.populatedIndex i b))
     else Nothing
+
+-- |
+-- Convert into a list representation.
+{-# INLINE maybeList #-}
+maybeList :: SparseSmallArray e -> [Maybe e]
+maybeList ssa = do
+  i <- Bitmap.allBitsList
+  return (lookup i ssa)
 
 {-# INLINE elementsUnfold #-}
 elementsUnfold :: SparseSmallArray e -> Unfold e

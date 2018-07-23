@@ -14,6 +14,7 @@ module PrimitiveExtras.Bitmap
   bits,
   populatedIndicesList,
   word,
+  allBitsList,
   allBitsUnfold,
   populatedBitsUnfold,
   indicesAmongstPopulatedBitsUnfold,
