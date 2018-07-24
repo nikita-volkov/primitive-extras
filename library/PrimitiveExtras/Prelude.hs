@@ -31,6 +31,7 @@ import Data.Fixed as Exports
 import Data.Foldable as Exports
 import Data.Function as Exports hiding (id, (.))
 import Data.Functor as Exports
+import Data.Functor.Identity as Exports
 import Data.Int as Exports
 import Data.IORef as Exports
 import Data.Ix as Exports
@@ -91,6 +92,10 @@ import Control.Foldl as Exports (Fold(..), FoldM(..))
 -------------------------
 import Data.Primitive as Exports
 import Control.Monad.Primitive as Exports
+
+-- focus
+-------------------------
+import Focus as Exports (Focus(..))
 
 
 data Product2 a b = Product2 !a !b
