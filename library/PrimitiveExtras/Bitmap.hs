@@ -5,7 +5,8 @@ module PrimitiveExtras.Bitmap
   singleton,
   insert,
   invert,
-  list,
+  indexList,
+  boolList,
   pair,
   populatedIndex,
   isPopulated,
@@ -13,7 +14,7 @@ module PrimitiveExtras.Bitmap
   null,
   bits,
   populatedIndicesList,
-  word,
+  int,
   allBitsList,
   allBitsUnfold,
   populatedBitsUnfold,
@@ -51,15 +52,19 @@ singleton = Bitmap . bit
 
 {-# INLINE insert #-}
 insert :: Int -> Bitmap -> Bitmap
-insert i = Bitmap . (bit i .|.) . word
+insert i = Bitmap . (bit i .|.) . int
 
 {-# INLINE invert #-}
 invert :: Int -> Bitmap -> Bitmap
-invert i = Bitmap . (bit i `xor`) . word
+invert i = Bitmap . (bit i `xor`) . int
 
-{-# INLINE list #-}
-list :: [Int] -> Bitmap
-list = Bitmap . foldr (.|.) 0 . map bit
+{-# INLINE indexList #-}
+indexList :: [Int] -> Bitmap
+indexList = Bitmap . foldr (.|.) 0 . map bit
+
+{-# INLINE boolList #-}
+boolList :: [Bool] -> Bitmap
+boolList = Bitmap . foldr (.|.) 0 . zipWith (\ index -> bool 0 (bit index)) allBitsList
 
 {-# INLINE pair #-}
 pair :: Int -> Int -> Bitmap
@@ -94,9 +99,9 @@ bits (Bitmap int) = filter (testBit int) allBitsList
 populatedIndicesList :: Bitmap -> [Int]
 populatedIndicesList = enumFromTo 0 . pred . population
 
-{-# INLINE word #-}
-word :: Bitmap -> Word
-word (Bitmap word) = word
+{-# INLINE int #-}
+int :: Bitmap -> Int
+int (Bitmap int) = int
 
 {-# NOINLINE allBitsUnfold #-}
 allBitsUnfold :: Unfold Int

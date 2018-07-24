@@ -3,12 +3,13 @@ module PrimitiveExtras.SparseSmallArray
   SparseSmallArray,
   empty,
   singleton,
+  maybeList,
   pair,
   insert,
   replace,
   unset,
   lookup,
-  maybeList,
+  toMaybeList,
   elementsUnfold,
   elementsUnfoldM,
   onElementAtFocus,
@@ -20,6 +21,7 @@ import PrimitiveExtras.Types
 import qualified PrimitiveExtras.Bitmap as Bitmap
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified Focus
+import qualified Control.Foldl as Foldl
 
 
 {-# INLINE empty #-}
@@ -43,6 +45,11 @@ pair i1 e1 i2 e2 =
   where 
     bitmap = Bitmap.pair i1 i2
     array = SmallArray.orderedPair i1 e1 i2 e2
+
+{-# INLINE maybeList #-}
+maybeList :: [Maybe e] -> SparseSmallArray e
+maybeList list =
+  SparseSmallArray (Bitmap.boolList (map isJust list)) (SmallArray.list (catMaybes list))
 
 {-|
 Insert an element value at the index.
@@ -69,12 +76,13 @@ replace i e (SparseSmallArray b a) =
 {-# INLINE unset #-}
 unset :: Int -> SparseSmallArray e -> SparseSmallArray e
 unset i (SparseSmallArray b a) =
-  {-# SCC "unset" #-} 
+  {-# SCC "unset" #-}
   if Bitmap.isPopulated i b
     then
-      let 
+      let
+        sparseIndex = Bitmap.populatedIndex i b
         b' = Bitmap.invert i b
-        a' = SmallArray.unset i a
+        a' = SmallArray.unset sparseIndex a
         in SparseSmallArray b' a'
     else SparseSmallArray b a
 
@@ -90,9 +98,9 @@ lookup i (SparseSmallArray b a) =
 
 -- |
 -- Convert into a list representation.
-{-# INLINE maybeList #-}
-maybeList :: SparseSmallArray e -> [Maybe e]
-maybeList ssa = do
+{-# INLINE toMaybeList #-}
+toMaybeList :: SparseSmallArray e -> [Maybe e]
+toMaybeList ssa = do
   i <- Bitmap.allBitsList
   return (lookup i ssa)
 
@@ -137,3 +145,13 @@ onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa whe
             else let
               newArray = SmallArray.unset index array
               in Focus.Set (SparseSmallArray newIndices newArray)
+
+{-# INLINE focusAt #-}
+focusAt :: Monad m => Focus a m b -> Int -> SparseSmallArray a -> m (b, SparseSmallArray a)
+focusAt aFocus index = case onElementAtFocus index aFocus of
+  Focus conceal reveal -> \ ssa -> do
+    (b, change) <- reveal ssa
+    return $ (b,) $ case change of
+      Focus.Leave -> ssa
+      Focus.Set newSsa -> newSsa
+      Focus.Remove -> empty

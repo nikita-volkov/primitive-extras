@@ -17,4 +17,4 @@ data SparseSmallArray e = SparseSmallArray !Bitmap !(SmallArray e)
 {-|
 A word-size set of ints.
 -}
-newtype Bitmap = Bitmap Word
+newtype Bitmap = Bitmap Int

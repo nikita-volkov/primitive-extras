@@ -3,6 +3,7 @@ where
 
 import PrimitiveExtras.Prelude
 import PrimitiveExtras.Types
+import GHC.Exts hiding (toList)
 import qualified Focus
 
 
@@ -10,19 +11,39 @@ import qualified Focus
 empty :: SmallArray a
 empty = runSmallArray (newSmallArray 0 undefined)
 
+{-| A workaround for the weird forcing of 'undefined' values int 'newSmallArray' -}
+{-# INLINE newEmptySmallArray #-}
+newEmptySmallArray :: PrimMonad m => Int -> m (SmallMutableArray (PrimState m) a)
+newEmptySmallArray size = newSmallArray size (unsafeCoerce 0)
+
+{-# INLINE list #-}
+list :: [a] -> SmallArray a
+list list =
+  let
+    !size = length list
+    in runSmallArray $ do
+      m <- newEmptySmallArray size
+      let populate index list = case list of
+            element : list -> do
+              writeSmallArray m index element
+              populate (succ index) list
+            [] -> return m
+          in populate 0 list
+
 -- |
 -- Remove an element.
 {-# INLINE unset #-}
 unset :: Int -> SmallArray a -> SmallArray a
 unset index array =
   {-# SCC "unset" #-}
-  let size = sizeofSmallArray array
-      newSize = pred size
-      amountOfFollowingElements = newSize - index
+  let !size = sizeofSmallArray array
+      !newSize = pred size
+      !newIndex = succ index
+      !amountOfFollowingElements = size - newIndex
       in runSmallArray $ do
         newMa <- newSmallArray newSize undefined
         copySmallArray newMa 0 array 0 index
-        copySmallArray newMa index array (succ index) amountOfFollowingElements
+        copySmallArray newMa index array newIndex amountOfFollowingElements
         return newMa
 
 {-# INLINE set #-}
@@ -30,7 +51,7 @@ set :: Int -> a -> SmallArray a -> SmallArray a
 set index a array =
   {-# SCC "set" #-} 
   let
-    size = sizeofSmallArray array
+    !size = sizeofSmallArray array
     in runSmallArray $ do
       newMa <- newSmallArray size undefined
       copySmallArray newMa 0 array 0 size
@@ -42,10 +63,10 @@ insert :: Int -> a -> SmallArray a -> SmallArray a
 insert index a array =
   {-# SCC "insert" #-} 
   let
-    size = sizeofSmallArray array
-    newSize = sizeofSmallArray array
-    nextIndex = succ index
-    amountOfFollowingElements = size - index
+    !size = sizeofSmallArray array
+    !newSize = succ size
+    !nextIndex = succ index
+    !amountOfFollowingElements = size - index
     in runSmallArray $ do
       newMa <- newSmallArray newSize a
       copySmallArray newMa 0 array 0 index
@@ -144,3 +165,6 @@ onFoundElementFocus testA (Focus concealA revealA) = Focus concealArray revealAr
       arrayChange = \ case
         Focus.Set newValue -> Focus.Set (cons newValue array)
         _ -> Focus.Leave
+
+toList :: forall a. SmallArray a -> [a]
+toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldM array :: UnfoldM Identity a)
