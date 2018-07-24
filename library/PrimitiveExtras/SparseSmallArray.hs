@@ -24,6 +24,14 @@ import qualified Focus
 import qualified Control.Foldl as Foldl
 
 
+instance Foldable SparseSmallArray where
+  {-# INLINE foldr #-}
+  foldr step state = foldr step state . elementsUnfold
+  {-# INLINE foldl' #-}
+  foldl' step state = foldl' step state . elementsUnfold
+  {-# INLINE foldMap #-}
+  foldMap monoid = foldMap monoid . elementsUnfold
+
 {-# INLINE empty #-}
 empty :: SparseSmallArray e
 empty = SparseSmallArray Bitmap.empty SmallArray.empty
