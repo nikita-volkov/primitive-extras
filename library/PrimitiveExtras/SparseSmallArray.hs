@@ -24,6 +24,11 @@ import qualified Focus
 import qualified Control.Foldl as Foldl
 
 
+instance Show a => Show (SparseSmallArray a) where
+  show = show . toMaybeList
+
+deriving instance Eq a => Eq (SparseSmallArray a)
+
 instance Foldable SparseSmallArray where
   {-# INLINE foldr #-}
   foldr step state = foldr step state . elementsUnfold

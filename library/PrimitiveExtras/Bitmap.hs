@@ -27,6 +27,8 @@ import PrimitiveExtras.Types
 import qualified DeferredFolds.Unfold as Unfold
 
 
+deriving instance Eq Bitmap
+
 {-# NOINLINE maxSize #-}
 maxSize :: Int
 maxSize = finiteBitSize (undefined :: Int)
