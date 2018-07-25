@@ -19,6 +19,7 @@ where
 
 import PrimitiveExtras.Prelude hiding (lookup, empty, insert)
 import PrimitiveExtras.Types
+import qualified PrimitiveExtras.Prelude as Prelude
 import qualified PrimitiveExtras.Bitmap as Bitmap
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified Focus
@@ -40,7 +41,7 @@ instance Foldable SparseSmallArray where
 
 {-# INLINE empty #-}
 empty :: SparseSmallArray e
-empty = SparseSmallArray Bitmap.empty SmallArray.empty
+empty = SparseSmallArray Bitmap.empty Prelude.empty
 
 -- |
 -- An array with a single element at the specified index.

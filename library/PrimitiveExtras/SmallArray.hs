@@ -7,10 +7,6 @@ import GHC.Exts hiding (toList)
 import qualified Focus
 
 
-{-# INLINE empty #-}
-empty :: SmallArray a
-empty = runSmallArray (newSmallArray 0 undefined)
-
 {-| A workaround for the weird forcing of 'undefined' values int 'newSmallArray' -}
 {-# INLINE newEmptySmallArray #-}
 newEmptySmallArray :: PrimMonad m => Int -> m (SmallMutableArray (PrimState m) a)
