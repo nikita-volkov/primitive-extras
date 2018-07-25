@@ -142,22 +142,23 @@ onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa whe
         revealA a
       else concealA
     where
+      sparseIndex = Bitmap.populatedIndex index indices
       aChangeToSsaChange = \ case
         Focus.Leave -> Focus.Leave
         Focus.Set a -> if Bitmap.isPopulated index indices
           then let
-            newArray = SmallArray.set index a array
+            newArray = SmallArray.set sparseIndex a array
             in Focus.Set (SparseSmallArray indices newArray)
           else let
             newIndices = Bitmap.insert index indices
-            newArray = SmallArray.insert index a array
+            newArray = SmallArray.insert sparseIndex a array
             in Focus.Set (SparseSmallArray newIndices newArray)
         Focus.Remove -> let
           newIndices = Bitmap.invert index indices
           in if Bitmap.null newIndices
             then Focus.Remove
             else let
-              newArray = SmallArray.unset index array
+              newArray = SmallArray.unset sparseIndex array
               in Focus.Set (SparseSmallArray newIndices newArray)
 
 {-# INLINE focusAt #-}
