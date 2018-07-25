@@ -166,5 +166,25 @@ onFoundElementFocus testA (Focus concealA revealA) = Focus concealArray revealAr
         Focus.Set newValue -> Focus.Set (cons newValue array)
         _ -> Focus.Leave
 
+{-# INLINABLE onFoundElementWithoutEqFocus #-}
+onFoundElementWithoutEqFocus :: Monad m => (a -> Bool) -> Focus a m b -> Focus (SmallArray a) m b
+onFoundElementWithoutEqFocus testA (Focus concealA revealA) = Focus concealArray revealArray where
+  concealArray = fmap (fmap arrayChange) concealA where
+    arrayChange = \ case
+      Focus.Set newValue -> Focus.Set (pure newValue)
+      _ -> Focus.Leave
+  revealArray array = case findWithIndex testA array of
+    Just (index, value) -> fmap (fmap arrayChange) (revealA value) where
+      arrayChange = \ case
+        Focus.Leave -> Focus.Leave
+        Focus.Set newValue -> Focus.Set (set index newValue array)
+        Focus.Remove -> if sizeofSmallArray array > 1
+          then Focus.Set (unset index array)
+          else Focus.Remove
+    Nothing -> fmap (fmap arrayChange) concealA where
+      arrayChange = \ case
+        Focus.Set newValue -> Focus.Set (cons newValue array)
+        _ -> Focus.Leave
+
 toList :: forall a. SmallArray a -> [a]
 toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldM array :: UnfoldM Identity a)
