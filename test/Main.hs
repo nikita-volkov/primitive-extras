@@ -7,6 +7,7 @@ import Test.Tasty.Runners
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
 import PrimitiveExtras.SparseSmallArray (SparseSmallArray)
+import qualified Focus
 import qualified Test.QuickCheck as QuickCheck
 import qualified Test.QuickCheck.Property as QuickCheck
 import qualified Main.Transaction as Transaction
@@ -38,6 +39,24 @@ main =
         in assertEqual ""
           [1, 3]
           (SmallArray.toList (SmallArray.unset 1 array))
+      ,
+      testCase "focus insert, when exists" $ let
+        array = SmallArray.list [1, 2, 3]
+        in assertEqual ""
+          [1, 4, 3]
+          (SmallArray.toList (snd (runIdentity (SmallArray.focusOnFoundElement (Focus.insert 4) (== 2) (const False) array))))
+      ,
+      testCase "focus insert, when doesn't exist" $ let
+        array = SmallArray.list [1, 2, 3]
+        in assertEqual ""
+          [4, 1, 2, 3]
+          (SmallArray.toList (snd (runIdentity (SmallArray.focusOnFoundElement (Focus.insert 4) (== 4) (const False) array))))
+      ,
+      testCase "focus delete" $ let
+        array = SmallArray.list [1, 2, 3]
+        in assertEqual ""
+          [1, 3]
+          (SmallArray.toList (snd (runIdentity (SmallArray.focusOnFoundElement Focus.delete (== 2) (const False) array))))
     ]
     ,
     testGroup "SparseSmallArray" $
