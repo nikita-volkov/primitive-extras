@@ -58,6 +58,10 @@ main =
       ,
       testTransactionProperty "unset" Gen.unsetTransaction
       ,
+      testTransactionProperty "focusInsert" Gen.focusInsertTransaction
+      ,
+      testTransactionProperty "focusDelete" Gen.focusDeleteTransaction
+      ,
       testTransactionProperty "unfold" Gen.unfoldTransaction
       ,
       testTransactionProperty "lookup" Gen.lookupTransaction

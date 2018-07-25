@@ -9,6 +9,7 @@ module PrimitiveExtras.SparseSmallArray
   replace,
   unset,
   lookup,
+  focusAt,
   toMaybeList,
   elementsUnfold,
   elementsUnfoldM,

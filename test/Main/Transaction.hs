@@ -1,6 +1,8 @@
 module Main.Transaction where
 
 import Prelude
+import Focus (Focus(..))
+import qualified Focus
 import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
 import qualified Data.Text as Text
 import qualified DeferredFolds.Unfold as Unfold
@@ -81,11 +83,31 @@ elementsUnfold =
     applyToSparseSmallArray = fmap SparseSmallArray.elementsUnfold get
   }
 
--- focusInsert :: Show element => Int -> element -> Transaction element
--- focusInsert index element =
---   Transaction {
---     name = "focusInsert " <> (fromString . show) index <> " " <> (fromString . show) element,
---     applyToMaybeList = do
---       list <- get
+focusAt :: (Show element, Eq result, Show result) => Text -> Focus element Identity result -> Int -> Transaction element
+focusAt focusName focus index =
+  Transaction {
+    name = "focusAt (" <> (fromString . show) index <> " " <> focusName <> ")"
+    ,
+    applyToMaybeList = do
+      list <- get
+      case focus of
+        Focus conceal reveal -> case splitAt index list of
+          (precedingList, elementMaybe : trailingList) -> do
+            (result, change) <- lift (maybe conceal reveal elementMaybe)
+            case change of
+              Focus.Leave -> return ()
+              Focus.Set newElement -> put (precedingList <> [Just newElement] <> trailingList)
+              Focus.Remove -> put (precedingList <> [Nothing] <> trailingList)
+            return result
+          _ -> error "Index out of bounds"
+    ,
+    applyToSparseSmallArray = StateT (SparseSmallArray.focusAt focus index)
+  }
 
---   }
+focusInsert :: Show element => Int -> element -> Transaction element
+focusInsert index element =
+  focusAt ("Insert (" <> (fromString . show) element <> ")") (Focus.insert element) index
+
+focusDelete :: Show element => Int -> Transaction element
+focusDelete index =
+  focusAt ("Delete") Focus.delete index

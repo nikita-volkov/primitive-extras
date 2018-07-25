@@ -20,6 +20,12 @@ lookupTransaction = Transaction.lookup <$> index
 setTransaction :: Gen (Transaction Int)
 setTransaction = Transaction.set <$> index <*> element
 
+focusInsertTransaction :: Gen (Transaction Int)
+focusInsertTransaction = Transaction.focusInsert <$> index <*> element
+
+focusDeleteTransaction :: Gen (Transaction Int)
+focusDeleteTransaction = Transaction.focusDelete <$> index
+
 unsetTransaction :: Gen (Transaction element)
 unsetTransaction = Transaction.unset <$> index
 
@@ -32,7 +38,9 @@ transaction =
     [
       (9, lookupTransaction),
       (9, setTransaction),
-      (9, unsetTransaction)
+      (9, unsetTransaction),
+      (9, focusInsertTransaction),
+      (9, focusDeleteTransaction)
     ]
 
 maybeList :: Gen [Maybe Int]
