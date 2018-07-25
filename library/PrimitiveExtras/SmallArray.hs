@@ -162,5 +162,15 @@ onFoundElementFocus testAsKey testWholeEntry (Focus concealA revealA) = Focus co
         Focus.Set newEntry -> Focus.Set (cons newEntry array)
         _ -> Focus.Leave
 
+{-# INLINE focusOnFoundElement #-}
+focusOnFoundElement :: Monad m => Focus a m b -> (a -> Bool) -> (a -> Bool) -> SmallArray a -> m (b, SmallArray a)
+focusOnFoundElement focus testAsKey testWholeEntry = case onFoundElementFocus testAsKey testWholeEntry focus of
+  Focus conceal reveal -> \ sa -> do
+    (b, change) <- reveal sa
+    return $ (b,) $ case change of
+      Focus.Leave -> sa
+      Focus.Set newSa -> newSa
+      Focus.Remove -> empty
+
 toList :: forall a. SmallArray a -> [a]
 toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldM array :: UnfoldM Identity a)
