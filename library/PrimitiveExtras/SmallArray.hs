@@ -81,7 +81,7 @@ cons a array =
       copySmallArray newMa 1 array 0 size
       return newMa
 
-{-# INLINABLE orderedPair #-}
+{-# INLINE orderedPair #-}
 orderedPair :: Int -> e -> Int -> e -> SmallArray e
 orderedPair i1 e1 i2 e2 =
   {-# SCC "orderedPair" #-} 
@@ -104,9 +104,9 @@ find test array =
   {-# SCC "find" #-} 
   let
     !size = sizeofSmallArray array
-    iterate index = if index < size
+    iterate !index = if index < size
       then let
-        element = indexSmallArray array index
+        !element = indexSmallArray array index
         in if test element
           then Just element
           else iterate (succ index)
@@ -119,16 +119,16 @@ findWithIndex test array =
   {-# SCC "findWithIndex" #-} 
   let
     !size = sizeofSmallArray array
-    iterate index = if index < size
+    iterate !index = if index < size
       then let
-        element = indexSmallArray array index
+        !element = indexSmallArray array index
         in if test element
           then Just (index, element)
           else iterate (succ index)
       else Nothing
     in iterate 0
 
-{-# INLINABLE elementsUnfoldM #-}
+{-# INLINE elementsUnfoldM #-}
 elementsUnfoldM :: Monad m => SmallArray e -> UnfoldM m e
 elementsUnfoldM array = UnfoldM $ \ step initialState -> let
   !size = sizeofSmallArray array
@@ -140,7 +140,7 @@ elementsUnfoldM array = UnfoldM $ \ step initialState -> let
     else return state
   in iterate 0 initialState
 
-{-# INLINABLE onFoundElementFocus #-}
+{-# INLINE onFoundElementFocus #-}
 onFoundElementFocus :: Monad m => (a -> Bool) -> (a -> Bool) -> Focus a m b -> Focus (SmallArray a) m b
 onFoundElementFocus testAsKey testWholeEntry (Focus concealA revealA) = Focus concealArray revealArray where
   concealArray = fmap (fmap arrayChange) concealA where

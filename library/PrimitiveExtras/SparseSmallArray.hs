@@ -127,7 +127,7 @@ elementsUnfold (SparseSmallArray _ array) = Unfold (\ f z -> foldl' f z array)
 elementsUnfoldM :: Monad m => SparseSmallArray a -> UnfoldM m a
 elementsUnfoldM (SparseSmallArray _ array) = SmallArray.elementsUnfoldM array
 
-{-# INLINABLE onElementAtFocus #-}
+{-# INLINE onElementAtFocus #-}
 onElementAtFocus :: Monad m => Int -> Focus a m b -> Focus (SparseSmallArray a) m b
 onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa where
   concealSsa = fmap (fmap aChangeToSsaChange) concealA where
