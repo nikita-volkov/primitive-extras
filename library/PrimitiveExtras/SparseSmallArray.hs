@@ -14,10 +14,11 @@ module PrimitiveExtras.SparseSmallArray
   elementsUnfold,
   elementsUnfoldM,
   onElementAtFocus,
+  null,
 )
 where
 
-import PrimitiveExtras.Prelude hiding (lookup, empty, insert)
+import PrimitiveExtras.Prelude hiding (lookup, empty, insert, null)
 import PrimitiveExtras.Types
 import qualified PrimitiveExtras.Prelude as Prelude
 import qualified PrimitiveExtras.Bitmap as Bitmap
@@ -171,3 +172,7 @@ focusAt aFocus index = case onElementAtFocus index aFocus of
       Focus.Leave -> ssa
       Focus.Set newSsa -> newSsa
       Focus.Remove -> empty
+
+{-# INLINE null #-}
+null :: SparseSmallArray a -> Bool
+null (SparseSmallArray bm _) = Bitmap.null bm
