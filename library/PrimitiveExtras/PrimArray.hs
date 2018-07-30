@@ -6,6 +6,7 @@ import PrimitiveExtras.Types
 import qualified Data.Serialize as Cereal
 import qualified Data.Vector.Unboxed as UnboxedVector
 import qualified Data.Vector.Primitive as PrimitiveVector
+import qualified PrimitiveExtras.Folds as Folds
 
 
 oneHot :: Prim a => Int {-^ Size -} -> Int {-^ Index -} -> a -> PrimArray a
@@ -99,3 +100,10 @@ cerealPut int element primArrayValue =
   where
     size = int (sizeofPrimArray primArrayValue)
     elements = traverse_ element primArrayValue
+
+{-|
+Given a size of the array,
+construct a fold, which produces an array of index counts.
+-}
+indexCountsFold :: (Integral count, Prim count) => Int {-^ Array size -} -> Fold Int (PrimArray count)
+indexCountsFold = Folds.indexCounts
