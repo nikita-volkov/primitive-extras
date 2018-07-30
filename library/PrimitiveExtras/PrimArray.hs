@@ -87,15 +87,15 @@ toUnboxedVector :: Prim a => PrimArray a -> UnboxedVector.Vector a
 toUnboxedVector primArray =
   unsafeCoerce (toPrimitiveVector primArray)
 
-cerealGet :: Prim element => Cereal.Get element -> Cereal.Get (PrimArray element)
-cerealGet element =
+cerealGet :: Prim element => Cereal.Get Int -> Cereal.Get element -> Cereal.Get (PrimArray element)
+cerealGet int element =
   do
-    size <- fromIntegral <$> Cereal.getInt64le
+    size <- int
     replicateM size element
 
-cerealPut :: Prim element => Cereal.Putter element -> Cereal.Putter (PrimArray element)
-cerealPut element primArrayValue =
+cerealPut :: Prim element => Cereal.Putter Int -> Cereal.Putter element -> Cereal.Putter (PrimArray element)
+cerealPut int element primArrayValue =
   size <> elements
   where
-    size = Cereal.putInt64le (fromIntegral (sizeofPrimArray primArrayValue))
+    size = int (sizeofPrimArray primArrayValue)
     elements = traverse_ element primArrayValue

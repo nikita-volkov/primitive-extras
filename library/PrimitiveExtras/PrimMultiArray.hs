@@ -83,15 +83,15 @@ toIndicesUnfoldM (PrimMultiArray ua) = UnfoldM.intsInRange 0 (pred (sizeofUnlift
 toUnfoldAtM :: (Monad m, Prim prim) => PrimMultiArray prim -> Int -> UnfoldM m prim
 toUnfoldAtM (PrimMultiArray ua) index = UnliftedArray.at ua index empty PrimArray.toElementsUnfoldM
 
-cerealGet :: Prim element => Cereal.Get element -> Cereal.Get (PrimMultiArray element)
-cerealGet element =
+cerealGet :: Prim element => Cereal.Get Int -> Cereal.Get element -> Cereal.Get (PrimMultiArray element)
+cerealGet int element =
   do
-    size <- fromIntegral <$> Cereal.getInt64le
-    replicateM size (PrimArray.cerealGet element)
+    size <- int
+    replicateM size (PrimArray.cerealGet int element)
 
-cerealPut :: Prim element => Cereal.Putter element -> Cereal.Putter (PrimMultiArray element)
-cerealPut element (PrimMultiArray outerArrayValue) =
+cerealPut :: Prim element => Cereal.Putter Int -> Cereal.Putter element -> Cereal.Putter (PrimMultiArray element)
+cerealPut int element (PrimMultiArray outerArrayValue) =
   size <> innerArrays
   where
-    size = Cereal.putInt64le (fromIntegral (sizeofUnliftedArray outerArrayValue))
-    innerArrays = UnliftedArray.traverse_ (PrimArray.cerealPut element) outerArrayValue
+    size = int (sizeofUnliftedArray outerArrayValue)
+    innerArrays = UnliftedArray.traverse_ (PrimArray.cerealPut int element) outerArrayValue
