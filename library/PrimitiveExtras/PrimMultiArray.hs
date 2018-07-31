@@ -12,10 +12,11 @@ module PrimitiveExtras.PrimMultiArray
   toUnfoldAtM,
   cerealGet,
   cerealPut,
+  fold,
 )
 where
 
-import PrimitiveExtras.Prelude hiding (replicateM)
+import PrimitiveExtras.Prelude hiding (replicateM, fold)
 import PrimitiveExtras.Types
 import qualified DeferredFolds.Unfold as Unfold
 import qualified DeferredFolds.UnfoldM as UnfoldM
@@ -95,3 +96,13 @@ cerealPut int element (PrimMultiArray outerArrayValue) =
   where
     size = int (sizeofUnliftedArray outerArrayValue)
     innerArrays = UnliftedArray.traverse_ (PrimArray.cerealPut int element) outerArrayValue
+
+{-|
+Having a priorly computed array of inner dimension sizes,
+e.g., using the 'PrimitiveExtras.PrimArray.indexCountsFold',
+construct a fold over indexed elements into a multi-array of elements.
+
+Thus it allows to construct it in two passes over the indexed elements.
+-}
+fold :: (Integral size, Prim size, Prim element) => PrimArray size -> Fold (Int, element) (PrimMultiArray element)
+fold = Folds.primMultiArray
