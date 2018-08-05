@@ -8,6 +8,7 @@ import qualified Data.Vector.Unboxed as UnboxedVector
 import qualified Data.Vector.Primitive as PrimitiveVector
 import qualified PrimitiveExtras.Folds as Folds
 import qualified PrimitiveExtras.FoldMs as FoldMs
+import qualified Data.ByteString.Short.Internal as ShortByteString
 
 
 oneHot :: Prim a => Int {-^ Size -} -> Int {-^ Index -} -> a -> PrimArray a
@@ -95,12 +96,26 @@ cerealGet int element =
     size <- int
     replicateM size element
 
+cerealGetAsInMemory :: Prim element => Cereal.Get Int -> Cereal.Get (PrimArray element)
+cerealGetAsInMemory int =
+  do
+    size <- int
+    ShortByteString.SBS ba <- Cereal.getShortByteString size
+    return (PrimArray ba)
+
 cerealPut :: Prim element => Cereal.Putter Int -> Cereal.Putter element -> Cereal.Putter (PrimArray element)
 cerealPut int element primArrayValue =
   size <> elements
   where
     size = int (sizeofPrimArray primArrayValue)
     elements = traverse_ element primArrayValue
+
+cerealPutAsInMemory :: Prim element => Cereal.Putter Int -> Cereal.Putter (PrimArray element)
+cerealPutAsInMemory int primArrayValue@(PrimArray ba) =
+  size <> elements
+  where
+    size = int (sizeofPrimArray primArrayValue)
+    elements = Cereal.putShortByteString (ShortByteString.SBS ba)
 
 {-|
 Given a size of the array,

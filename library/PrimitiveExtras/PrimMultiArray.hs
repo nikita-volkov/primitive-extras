@@ -11,7 +11,9 @@ module PrimitiveExtras.PrimMultiArray
   toIndicesUnfoldM,
   toUnfoldAtM,
   cerealGet,
+  cerealGetAsInMemory,
   cerealPut,
+  cerealPutAsInMemory,
   fold,
 )
 where
@@ -90,12 +92,25 @@ cerealGet int element =
     size <- int
     replicateM size (PrimArray.cerealGet int element)
 
+cerealGetAsInMemory :: Prim element => Cereal.Get Int -> Cereal.Get (PrimMultiArray element)
+cerealGetAsInMemory int =
+  do
+    size <- int
+    replicateM size (PrimArray.cerealGetAsInMemory int)
+
 cerealPut :: Prim element => Cereal.Putter Int -> Cereal.Putter element -> Cereal.Putter (PrimMultiArray element)
 cerealPut int element (PrimMultiArray outerArrayValue) =
   size <> innerArrays
   where
     size = int (sizeofUnliftedArray outerArrayValue)
     innerArrays = UnliftedArray.traverse_ (PrimArray.cerealPut int element) outerArrayValue
+
+cerealPutAsInMemory :: Prim element => Cereal.Putter Int -> Cereal.Putter (PrimMultiArray element)
+cerealPutAsInMemory int (PrimMultiArray outerArrayValue) =
+  size <> innerArrays
+  where
+    size = int (sizeofUnliftedArray outerArrayValue)
+    innerArrays = UnliftedArray.traverse_ (PrimArray.cerealPutAsInMemory int) outerArrayValue
 
 {-|
 Having a priorly computed array of inner dimension sizes,
