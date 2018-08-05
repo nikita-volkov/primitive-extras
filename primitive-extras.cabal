@@ -50,6 +50,7 @@ library
     PrimitiveExtras.Prelude
     PrimitiveExtras.Types
     PrimitiveExtras.Folds
+    PrimitiveExtras.FoldMs
   build-depends:
     base >=4.7 && <5,
     cereal >=0.5.5 && <0.6,

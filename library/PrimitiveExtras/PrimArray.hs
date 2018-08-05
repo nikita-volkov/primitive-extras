@@ -7,6 +7,7 @@ import qualified Data.Serialize as Cereal
 import qualified Data.Vector.Unboxed as UnboxedVector
 import qualified Data.Vector.Primitive as PrimitiveVector
 import qualified PrimitiveExtras.Folds as Folds
+import qualified PrimitiveExtras.FoldMs as FoldMs
 
 
 oneHot :: Prim a => Int {-^ Size -} -> Int {-^ Index -} -> a -> PrimArray a
@@ -107,3 +108,10 @@ construct a fold, which produces an array of index counts.
 -}
 indexCountsFold :: (Integral count, Prim count) => Int {-^ Array size -} -> Fold Int (PrimArray count)
 indexCountsFold = Folds.indexCounts
+
+{-|
+Given a size of the array,
+construct a fold, which produces an array of elements.
+-}
+elementsFoldM :: Prim a => Int {-^ Array size -} -> FoldM IO a (PrimArray a)
+elementsFoldM = FoldMs.primArray
