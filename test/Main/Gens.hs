@@ -4,6 +4,7 @@ import Prelude hiding (choose, index)
 import Test.QuickCheck.Gen
 import Focus (Focus(..))
 import Main.Transaction (Transaction)
+import Data.Primitive
 import qualified Main.Transaction as Transaction
 import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
 
@@ -54,3 +55,8 @@ maybeList =
 sparseSmallArray :: Gen (SparseSmallArray.SparseSmallArray Int)
 sparseSmallArray =
   SparseSmallArray.maybeList <$> maybeList
+
+primArray :: Prim a => Gen a -> Gen (PrimArray a)
+primArray aGen = do
+  list <- listOf aGen
+  return (primArrayFromList list)

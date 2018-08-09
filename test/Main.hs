@@ -14,6 +14,8 @@ import qualified Main.Transaction as Transaction
 import qualified Main.Gens as Gen
 import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
 import qualified PrimitiveExtras.SmallArray as SmallArray
+import qualified PrimitiveExtras.PrimArray as PrimArray
+import qualified Data.Serialize as Serialize
 
 
 main =
@@ -86,6 +88,14 @@ main =
       testTransactionProperty "lookup" Gen.lookupTransaction
       ,
       testTransactionProperty "composite" Gen.transaction
+    ]
+    ,
+    testGroup "PrimArray" $
+    [
+      testProperty "Serializes well with as in memory" $ forAll (Gen.primArray Gen.element) $ \ primArray ->
+      Right primArray ===
+      Serialize.runGet (PrimArray.cerealGetAsInMemory Serialize.get)
+          (Serialize.runPut ((PrimArray.cerealPutAsInMemory Serialize.put) primArray))
     ]
   ]
 

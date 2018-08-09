@@ -114,7 +114,7 @@ cerealPutAsInMemory :: Prim element => Cereal.Putter Int -> Cereal.Putter (PrimA
 cerealPutAsInMemory int primArrayValue@(PrimArray ba) =
   size <> elements
   where
-    size = int (sizeofPrimArray primArrayValue)
+    size = int (sizeofByteArray (ByteArray ba))
     elements = Cereal.putShortByteString (ShortByteString.SBS ba)
 
 {-|
