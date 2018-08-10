@@ -128,6 +128,10 @@ elementsUnfold (SparseSmallArray _ array) = Unfold (\ f z -> foldl' f z array)
 elementsUnfoldM :: Monad m => SparseSmallArray a -> UnfoldM m a
 elementsUnfoldM (SparseSmallArray _ array) = SmallArray.elementsUnfoldM array
 
+{-# INLINE elementsListT #-}
+elementsListT :: SparseSmallArray a -> ListT STM a
+elementsListT (SparseSmallArray _ array) = SmallArray.elementsListT array
+
 {-# INLINE onElementAtFocus #-}
 onElementAtFocus :: Monad m => Int -> Focus a m b -> Focus (SparseSmallArray a) m b
 onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa where

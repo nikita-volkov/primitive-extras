@@ -5,6 +5,7 @@ import PrimitiveExtras.Prelude
 import PrimitiveExtras.Types
 import GHC.Exts hiding (toList)
 import qualified Focus
+import qualified ListT
 
 
 {-| A workaround for the weird forcing of 'undefined' values int 'newSmallArray' -}
@@ -139,6 +140,10 @@ elementsUnfoldM array = UnfoldM $ \ step initialState -> let
       iterate (succ index) newState
     else return state
   in iterate 0 initialState
+
+{-# INLINE elementsListT #-}
+elementsListT :: Monad m => SmallArray a -> ListT m a
+elementsListT = ListT.fromFoldable
 
 {-# INLINE onFoundElementFocus #-}
 onFoundElementFocus :: Monad m => (a -> Bool) -> (a -> Bool) -> Focus a m b -> Focus (SmallArray a) m b
