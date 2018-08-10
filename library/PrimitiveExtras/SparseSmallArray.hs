@@ -13,6 +13,7 @@ module PrimitiveExtras.SparseSmallArray
   toMaybeList,
   elementsUnfold,
   elementsUnfoldM,
+  elementsListT,
   onElementAtFocus,
   null,
 )
