@@ -11,6 +11,7 @@ module PrimitiveExtras.SparseSmallArray
   lookup,
   focusAt,
   toMaybeList,
+  toIndexedList,
   elementsUnfold,
   elementsUnfoldM,
   elementsListT,
@@ -120,6 +121,10 @@ toMaybeList :: SparseSmallArray e -> [Maybe e]
 toMaybeList ssa = do
   i <- Bitmap.allBitsList
   return (lookup i ssa)
+
+{-# INLINE toIndexedList #-}
+toIndexedList :: SparseSmallArray e -> [(Int, e)]
+toIndexedList = catMaybes . zipWith (\i -> fmap (i,)) [0..] . toMaybeList
 
 {-# INLINE elementsUnfold #-}
 elementsUnfold :: SparseSmallArray e -> Unfold e
