@@ -72,11 +72,11 @@ traverseWithIndexInRange_ primArray from to action =
         else return ()
       in iterate from
 
-toElementsUnfold :: Prim prim => PrimArray prim -> Unfold prim
-toElementsUnfold ba = Unfold $ \f z -> foldlPrimArray' f z ba
+toElementsUnfoldl :: Prim prim => PrimArray prim -> Unfoldl prim
+toElementsUnfoldl ba = Unfoldl $ \f z -> foldlPrimArray' f z ba
 
-toElementsUnfoldM :: (Monad m, Prim prim) => PrimArray prim -> UnfoldM m prim
-toElementsUnfoldM ba = UnfoldM $ \f z -> foldlPrimArrayM' f z ba
+toElementsUnfoldlM :: (Monad m, Prim prim) => PrimArray prim -> UnfoldlM m prim
+toElementsUnfoldlM ba = UnfoldlM $ \f z -> foldlPrimArrayM' f z ba
 
 toByteArray :: PrimArray a -> ByteArray
 toByteArray (PrimArray unliftedByteArray) =

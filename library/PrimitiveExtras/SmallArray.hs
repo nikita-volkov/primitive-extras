@@ -129,9 +129,9 @@ findWithIndex test array =
       else Nothing
     in iterate 0
 
-{-# INLINE elementsUnfoldM #-}
-elementsUnfoldM :: Monad m => SmallArray e -> UnfoldM m e
-elementsUnfoldM array = UnfoldM $ \ step initialState -> let
+{-# INLINE elementsUnfoldlM #-}
+elementsUnfoldlM :: Monad m => SmallArray e -> UnfoldlM m e
+elementsUnfoldlM array = UnfoldlM $ \ step initialState -> let
   !size = sizeofSmallArray array
   iterate index !state = if index < size
     then do
@@ -178,4 +178,4 @@ focusOnFoundElement focus testAsKey testWholeEntry = case onFoundElementFocus te
       Focus.Remove -> empty
 
 toList :: forall a. SmallArray a -> [a]
-toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldM array :: UnfoldM Identity a)
+toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldlM array :: UnfoldlM Identity a)

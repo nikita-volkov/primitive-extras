@@ -12,8 +12,8 @@ module PrimitiveExtras.SparseSmallArray
   focusAt,
   toMaybeList,
   toIndexedList,
-  elementsUnfold,
-  elementsUnfoldM,
+  elementsUnfoldl,
+  elementsUnfoldlM,
   elementsListT,
   onElementAtFocus,
   null,
@@ -36,11 +36,11 @@ deriving instance Eq a => Eq (SparseSmallArray a)
 
 instance Foldable SparseSmallArray where
   {-# INLINE foldr #-}
-  foldr step state = foldr step state . elementsUnfold
+  foldr step state = foldr step state . elementsUnfoldl
   {-# INLINE foldl' #-}
-  foldl' step state = foldl' step state . elementsUnfold
+  foldl' step state = foldl' step state . elementsUnfoldl
   {-# INLINE foldMap #-}
-  foldMap monoid = foldMap monoid . elementsUnfold
+  foldMap monoid = foldMap monoid . elementsUnfoldl
 
 {-# INLINE empty #-}
 empty :: SparseSmallArray e
@@ -126,13 +126,13 @@ toMaybeList ssa = do
 toIndexedList :: SparseSmallArray e -> [(Int, e)]
 toIndexedList = catMaybes . zipWith (\i -> fmap (i,)) [0..] . toMaybeList
 
-{-# INLINE elementsUnfold #-}
-elementsUnfold :: SparseSmallArray e -> Unfold e
-elementsUnfold (SparseSmallArray _ array) = Unfold (\ f z -> foldl' f z array)
+{-# INLINE elementsUnfoldl #-}
+elementsUnfoldl :: SparseSmallArray e -> Unfoldl e
+elementsUnfoldl (SparseSmallArray _ array) = Unfoldl (\ f z -> foldl' f z array)
 
-{-# INLINE elementsUnfoldM #-}
-elementsUnfoldM :: Monad m => SparseSmallArray a -> UnfoldM m a
-elementsUnfoldM (SparseSmallArray _ array) = SmallArray.elementsUnfoldM array
+{-# INLINE elementsUnfoldlM #-}
+elementsUnfoldlM :: Monad m => SparseSmallArray a -> UnfoldlM m a
+elementsUnfoldlM (SparseSmallArray _ array) = SmallArray.elementsUnfoldlM array
 
 {-# INLINE elementsListT #-}
 elementsListT :: SparseSmallArray a -> ListT STM a

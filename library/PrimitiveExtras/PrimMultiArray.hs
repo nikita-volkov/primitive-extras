@@ -4,12 +4,12 @@ module PrimitiveExtras.PrimMultiArray
   create,
   replicateM,
   outerLength,
-  toAssocsUnfold,
-  toIndicesUnfold,
-  toUnfoldAt,
-  toAssocsUnfoldM,
-  toIndicesUnfoldM,
-  toUnfoldAtM,
+  toAssocsUnfoldl,
+  toIndicesUnfoldl,
+  toUnfoldlAt,
+  toAssocsUnfoldlM,
+  toIndicesUnfoldlM,
+  toUnfoldlAtM,
   cerealGet,
   cerealGetAsInMemory,
   cerealPut,
@@ -20,8 +20,8 @@ where
 
 import PrimitiveExtras.Prelude hiding (replicateM, fold)
 import PrimitiveExtras.Types
-import qualified DeferredFolds.Unfold as Unfold
-import qualified DeferredFolds.UnfoldM as UnfoldM
+import qualified DeferredFolds.Unfoldl as Unfoldl
+import qualified DeferredFolds.UnfoldlM as UnfoldlM
 import qualified PrimitiveExtras.UnliftedArray as UnliftedArray
 import qualified PrimitiveExtras.PrimArray as PrimArray
 import qualified PrimitiveExtras.Folds as Folds
@@ -64,27 +64,27 @@ replicateM size elementM =
 outerLength :: PrimMultiArray a -> Int
 outerLength (PrimMultiArray outerDimension) = sizeofUnliftedArray outerDimension
 
-toAssocsUnfold :: Prim a => PrimMultiArray a -> Unfold (Int, a)
-toAssocsUnfold = Unfold.unfoldM . toAssocsUnfoldM
+toAssocsUnfoldl :: Prim a => PrimMultiArray a -> Unfoldl (Int, a)
+toAssocsUnfoldl = Unfoldl.unfoldlM . toAssocsUnfoldlM
 
-toIndicesUnfold :: PrimMultiArray a -> Unfold Int
-toIndicesUnfold (PrimMultiArray ua) = Unfold.intsInRange 0 (pred (sizeofUnliftedArray ua))
+toIndicesUnfoldl :: PrimMultiArray a -> Unfoldl Int
+toIndicesUnfoldl (PrimMultiArray ua) = Unfoldl.intsInRange 0 (pred (sizeofUnliftedArray ua))
 
-toUnfoldAt :: Prim prim => PrimMultiArray prim -> Int -> Unfold prim
-toUnfoldAt (PrimMultiArray ua) index = UnliftedArray.at ua index empty PrimArray.toElementsUnfold
+toUnfoldlAt :: Prim prim => PrimMultiArray prim -> Int -> Unfoldl prim
+toUnfoldlAt (PrimMultiArray ua) index = UnliftedArray.at ua index empty PrimArray.toElementsUnfoldl
 
-toAssocsUnfoldM :: (Monad m, Prim a) => PrimMultiArray a -> UnfoldM m (Int, a)
-toAssocsUnfoldM pma =
+toAssocsUnfoldlM :: (Monad m, Prim a) => PrimMultiArray a -> UnfoldlM m (Int, a)
+toAssocsUnfoldlM pma =
   do
-    index <- toIndicesUnfoldM pma
-    element <- toUnfoldAtM pma index
+    index <- toIndicesUnfoldlM pma
+    element <- toUnfoldlAtM pma index
     return (index, element)
 
-toIndicesUnfoldM :: Monad m => PrimMultiArray a -> UnfoldM m Int
-toIndicesUnfoldM (PrimMultiArray ua) = UnfoldM.intsInRange 0 (pred (sizeofUnliftedArray ua))
+toIndicesUnfoldlM :: Monad m => PrimMultiArray a -> UnfoldlM m Int
+toIndicesUnfoldlM (PrimMultiArray ua) = UnfoldlM.intsInRange 0 (pred (sizeofUnliftedArray ua))
 
-toUnfoldAtM :: (Monad m, Prim prim) => PrimMultiArray prim -> Int -> UnfoldM m prim
-toUnfoldAtM (PrimMultiArray ua) index = UnliftedArray.at ua index empty PrimArray.toElementsUnfoldM
+toUnfoldlAtM :: (Monad m, Prim prim) => PrimMultiArray prim -> Int -> UnfoldlM m prim
+toUnfoldlAtM (PrimMultiArray ua) index = UnliftedArray.at ua index empty PrimArray.toElementsUnfoldlM
 
 cerealGet :: Prim element => Cereal.Get Int -> Cereal.Get element -> Cereal.Get (PrimMultiArray element)
 cerealGet int element =

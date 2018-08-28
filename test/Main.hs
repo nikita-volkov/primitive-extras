@@ -83,7 +83,7 @@ main =
       ,
       testTransactionProperty "focusDelete" Gen.focusDeleteTransaction
       ,
-      testTransactionProperty "unfold" Gen.unfoldTransaction
+      testTransactionProperty "unfoldl" Gen.unfoldlTransaction
       ,
       testTransactionProperty "lookup" Gen.lookupTransaction
       ,

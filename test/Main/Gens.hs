@@ -30,8 +30,8 @@ focusDeleteTransaction = Transaction.focusDelete <$> index
 unsetTransaction :: Gen (Transaction element)
 unsetTransaction = Transaction.unset <$> index
 
-unfoldTransaction :: (Show element, Eq element) => Gen (Transaction element)
-unfoldTransaction = pure Transaction.elementsUnfold
+unfoldlTransaction :: (Show element, Eq element) => Gen (Transaction element)
+unfoldlTransaction = pure Transaction.elementsUnfoldl
 
 transaction :: Gen (Transaction Int)
 transaction =

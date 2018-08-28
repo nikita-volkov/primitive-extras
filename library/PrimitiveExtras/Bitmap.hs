@@ -16,15 +16,15 @@ module PrimitiveExtras.Bitmap
   populatedIndicesList,
   int,
   allBitsList,
-  allBitsUnfold,
-  populatedBitsUnfold,
-  indicesAmongstPopulatedBitsUnfold,
+  allBitsUnfoldl,
+  populatedBitsUnfoldl,
+  indicesAmongstPopulatedBitsUnfoldl,
 )
 where
 
 import PrimitiveExtras.Prelude hiding (traverse_, insert, null, empty)
 import PrimitiveExtras.Types
-import qualified DeferredFolds.Unfold as Unfold
+import qualified DeferredFolds.Unfoldl as Unfoldl
 
 
 deriving instance Eq Bitmap
@@ -105,12 +105,12 @@ populatedIndicesList = enumFromTo 0 . pred . population
 int :: Bitmap -> Int
 int (Bitmap int) = int
 
-{-# NOINLINE allBitsUnfold #-}
-allBitsUnfold :: Unfold Int
-allBitsUnfold = Unfold.intsInRange 0 maxBit
+{-# NOINLINE allBitsUnfoldl #-}
+allBitsUnfoldl :: Unfoldl Int
+allBitsUnfoldl = Unfoldl.intsInRange 0 maxBit
 
-populatedBitsUnfold :: Bitmap -> Unfold Int
-populatedBitsUnfold bitmap = Unfold.filter (flip isPopulated bitmap) allBitsUnfold
+populatedBitsUnfoldl :: Bitmap -> Unfoldl Int
+populatedBitsUnfoldl bitmap = Unfoldl.filter (flip isPopulated bitmap) allBitsUnfoldl
 
-indicesAmongstPopulatedBitsUnfold :: Bitmap -> Unfold Int
-indicesAmongstPopulatedBitsUnfold bitmap = Unfold.intsInRange 0 (pred (population bitmap))
+indicesAmongstPopulatedBitsUnfoldl :: Bitmap -> Unfoldl Int
+indicesAmongstPopulatedBitsUnfoldl bitmap = Unfoldl.intsInRange 0 (pred (population bitmap))

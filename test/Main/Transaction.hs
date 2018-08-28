@@ -5,7 +5,7 @@ import Focus (Focus(..))
 import qualified Focus
 import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
 import qualified Data.Text as Text
-import qualified DeferredFolds.Unfold as Unfold
+import qualified DeferredFolds.Unfoldl as Unfoldl
 
 
 data Transaction element = forall result. (Show result, Eq result) => Transaction {
@@ -70,17 +70,17 @@ lookup index =
     applyToSparseSmallArray = fmap (SparseSmallArray.lookup index) get
   }
 
-elementsUnfold :: (Show element, Eq element) => Transaction element
-elementsUnfold =
+elementsUnfoldl :: (Show element, Eq element) => Transaction element
+elementsUnfoldl =
   Transaction {
-    name = "elementsUnfold",
+    name = "elementsUnfoldl",
     applyToMaybeList = do
       list <- get
       return $ do
-        maybeElement <- Unfold.foldable list
-        element <- Unfold.foldable maybeElement
+        maybeElement <- Unfoldl.foldable list
+        element <- Unfoldl.foldable maybeElement
         return element,
-    applyToSparseSmallArray = fmap SparseSmallArray.elementsUnfold get
+    applyToSparseSmallArray = fmap SparseSmallArray.elementsUnfoldl get
   }
 
 focusAt :: (Show element, Eq result, Show result) => Text -> Focus element Identity result -> Int -> Transaction element
