@@ -37,7 +37,7 @@ library
     base >=4.7 && <5,
     bytestring >=0.10 && <0.11,
     cereal >=0.5.5 && <0.6,
-    deferred-folds >=0.7 && <0.8,
+    deferred-folds >=0.7 && <0.9,
     focus >=1 && <1.1,
     foldl >=1 && <2,
     list-t >=1.0.1 && <1.1,
