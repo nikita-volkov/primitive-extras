@@ -1,6 +1,7 @@
 module Main where
 
-import Prelude
+import Prelude hiding (choose)
+import Data.Primitive
 import Test.QuickCheck.Instances
 import Test.Tasty
 import Test.Tasty.Runners
@@ -16,6 +17,7 @@ import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified PrimitiveExtras.PrimArray as PrimArray
 import qualified Data.Serialize as Serialize
+import qualified Data.Vector.Primitive as PrimitiveVector
 
 
 main =
@@ -92,6 +94,21 @@ main =
     ,
     testGroup "PrimArray" $
     [
+      testProperty "Construction from primitive vector" $ let
+        gen = do
+          offset <- choose (0, 2)
+          length <- choose (0, 100)
+          listSize <- let
+            minSize = offset + length
+            in choose (minSize, minSize + 100)
+          list :: [Int32] <- replicateM listSize arbitrary
+          return (list, offset, length)
+        in forAll gen $ \ (inputList, offset, length) -> let
+          !inputVec = PrimitiveVector.fromList inputList
+          !sliceVec = PrimitiveVector.slice offset length inputVec
+          !sliceList = PrimitiveVector.toList sliceVec
+          in sliceList === primArrayToList (PrimArray.primitiveVector sliceVec)
+      ,
       testProperty "Serializes well with as in memory" $ forAll (Gen.primArray Gen.element) $ \ primArray ->
       Right primArray ===
       Serialize.runGet (PrimArray.cerealGetAsInMemory Serialize.get)

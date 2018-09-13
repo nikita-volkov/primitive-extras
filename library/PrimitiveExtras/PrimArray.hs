@@ -11,6 +11,20 @@ import qualified PrimitiveExtras.FoldMs as FoldMs
 import qualified Data.ByteString.Short.Internal as ShortByteString
 
 
+{-|
+Construct from a primitive vector.
+In case the vector is not a slice, it is an /O(1)/ op.
+-}
+primitiveVector :: Prim a => PrimitiveVector.Vector a -> PrimArray a
+primitiveVector (PrimitiveVector.Vector offset length (ByteArray unliftedByteArray)) = let
+  primArray = PrimArray unliftedByteArray
+  in if offset == 0 && length == sizeofPrimArray primArray
+    then primArray
+    else runST $ do
+      ma <- newPrimArray length
+      copyPrimArray ma 0 primArray offset length
+      unsafeFreezePrimArray ma
+
 oneHot :: Prim a => Int {-^ Size -} -> Int {-^ Index -} -> a -> PrimArray a
 oneHot size index value =
   runST $ do
