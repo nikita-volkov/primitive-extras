@@ -73,7 +73,7 @@ primMultiArray sizeArray =
           UA.generate outerLength $ \ index -> do
             newPrimArray (fromIntegral (indexPrimArray sizeArray index))
     step (Product2 indexArray multiArray) (outerIndex, element) = do
-      innerArray <- indexUnliftedArrayM multiArray outerIndex
+      let innerArray = indexUnliftedArray multiArray outerIndex 
       innerIndex <- readPrimArray indexArray outerIndex
       writePrimArray indexArray outerIndex (succ innerIndex)
       writePrimArray innerArray (fromIntegral innerIndex) element

@@ -47,8 +47,7 @@ traverse_ action array =
     size = sizeofUnliftedArray array
     iterate index = if index < size
       then do
-        element <- indexUnliftedArrayM array index
-        action element
+        action (indexUnliftedArray array index)
         iterate (succ index)
       else return ()
     in iterate 0

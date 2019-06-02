@@ -93,6 +93,11 @@ import Control.Foldl as Exports (Fold(..), FoldM(..))
 import Data.Primitive as Exports
 import Control.Monad.Primitive as Exports
 
+-- primitive-unlifted
+-------------------------
+import Data.Primitive.Unlifted.Array as Exports
+import Data.Primitive.Unlifted.Class as Exports
+
 -- focus
 -------------------------
 import Focus as Exports (Focus(..))
