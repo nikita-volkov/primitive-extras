@@ -103,16 +103,18 @@ update fn i (By6Bits b a) =
 -- Remove an element.
 {-# INLINE unset #-}
 unset :: Int -> By6Bits e -> By6Bits e
-unset i (By6Bits b a) =
+unset i (By6Bits (Bitmap b) a) =
   {-# SCC "unset" #-}
-  if Bitmap.isPopulated i b
-    then
-      let
-        sparseIndex = Bitmap.populatedIndex i b
-        b' = Bitmap.invert i b
-        a' = SmallArray.unset sparseIndex a
-        in By6Bits b' a'
-    else By6Bits b a
+  let
+    bitAtIndex = bit i
+    isPopulated = b .&. bitAtIndex /= 0
+    in if isPopulated
+      then let
+        populatedIndex = popCount (b .&. pred bitAtIndex)
+        updatedBitmap = xor b bitAtIndex
+        updatedArray = SmallArray.unset populatedIndex a
+        in By6Bits (Bitmap updatedBitmap) updatedArray
+      else By6Bits (Bitmap b) a
 
 -- |
 -- Lookup an item at the index.

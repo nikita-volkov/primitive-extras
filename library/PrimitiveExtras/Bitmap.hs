@@ -1,6 +1,6 @@
 module PrimitiveExtras.Bitmap
 (
-  Bitmap,
+  Bitmap(..),
   empty,
   singleton,
   insert,
