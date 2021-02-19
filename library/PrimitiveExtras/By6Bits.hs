@@ -1,6 +1,6 @@
-module PrimitiveExtras.SparseSmallArray
+module PrimitiveExtras.By6Bits
 (
-  SparseSmallArray,
+  By6Bits,
   empty,
   singleton,
   maybeList,
@@ -30,12 +30,12 @@ import qualified Focus
 import qualified Control.Foldl as Foldl
 
 
-instance Show a => Show (SparseSmallArray a) where
+instance Show a => Show (By6Bits a) where
   show = show . toMaybeList
 
-deriving instance Eq a => Eq (SparseSmallArray a)
+deriving instance Eq a => Eq (By6Bits a)
 
-instance Foldable SparseSmallArray where
+instance Foldable By6Bits where
   {-# INLINE foldr #-}
   foldr step state = foldr step state . elementsUnfoldl
   {-# INLINE foldl' #-}
@@ -44,66 +44,66 @@ instance Foldable SparseSmallArray where
   foldMap monoid = foldMap monoid . elementsUnfoldl
 
 {-# INLINE empty #-}
-empty :: SparseSmallArray e
-empty = SparseSmallArray Bitmap.empty Prelude.empty
+empty :: By6Bits e
+empty = By6Bits Bitmap.empty Prelude.empty
 
 -- |
 -- An array with a single element at the specified index.
 {-# INLINE singleton #-}
-singleton :: Int -> e -> SparseSmallArray e
+singleton :: Int -> e -> By6Bits e
 singleton i e = 
   let b = Bitmap.singleton i
       a = runST $ newSmallArray 1 e >>= unsafeFreezeSmallArray
-      in SparseSmallArray b a
+      in By6Bits b a
 
 {-# INLINE pair #-}
-pair :: Int -> e -> Int -> e -> SparseSmallArray e
+pair :: Int -> e -> Int -> e -> By6Bits e
 pair i1 e1 i2 e2 =
   {-# SCC "pair" #-} 
-  SparseSmallArray bitmap array
+  By6Bits bitmap array
   where 
     bitmap = Bitmap.pair i1 i2
     array = SmallArray.orderedPair i1 e1 i2 e2
 
 {-# INLINE maybeList #-}
-maybeList :: [Maybe e] -> SparseSmallArray e
+maybeList :: [Maybe e] -> By6Bits e
 maybeList list =
-  SparseSmallArray (Bitmap.boolList (map isJust list)) (SmallArray.list (catMaybes list))
+  By6Bits (Bitmap.boolList (map isJust list)) (SmallArray.list (catMaybes list))
 
 {-|
 Insert an element value at the index.
 It's your obligation to ensure that the index is empty before the operation.
 -}
 {-# INLINE insert #-}
-insert :: Int -> e -> SparseSmallArray e -> SparseSmallArray e
-insert i e (SparseSmallArray b a) =
+insert :: Int -> e -> By6Bits e -> By6Bits e
+insert i e (By6Bits b a) =
   {-# SCC "insert" #-} 
   let
     sparseIndex = Bitmap.populatedIndex i b
-    in SparseSmallArray (Bitmap.insert i b) (SmallArray.insert sparseIndex e a)
+    in By6Bits (Bitmap.insert i b) (SmallArray.insert sparseIndex e a)
     
 {-# INLINE replace #-}
-replace :: Int -> e -> SparseSmallArray e -> SparseSmallArray e
-replace i e (SparseSmallArray b a) =
+replace :: Int -> e -> By6Bits e -> By6Bits e
+replace i e (By6Bits b a) =
   {-# SCC "replace" #-} 
   let
     sparseIndex = Bitmap.populatedIndex i b
-    in SparseSmallArray b (SmallArray.set sparseIndex e a)
+    in By6Bits b (SmallArray.set sparseIndex e a)
 
 {-# INLINE update #-}
-update :: (e -> e) -> Int -> SparseSmallArray e -> SparseSmallArray e
-update fn i (SparseSmallArray b a) =
+update :: (e -> e) -> Int -> By6Bits e -> By6Bits e
+update fn i (By6Bits b a) =
   let
     sparseIndex = Bitmap.populatedIndex i b
     in
-      SparseSmallArray b
+      By6Bits b
         (SmallArray.unsafeUpdate fn sparseIndex a)
 
 -- |
 -- Remove an element.
 {-# INLINE unset #-}
-unset :: Int -> SparseSmallArray e -> SparseSmallArray e
-unset i (SparseSmallArray b a) =
+unset :: Int -> By6Bits e -> By6Bits e
+unset i (By6Bits b a) =
   {-# SCC "unset" #-}
   if Bitmap.isPopulated i b
     then
@@ -111,14 +111,14 @@ unset i (SparseSmallArray b a) =
         sparseIndex = Bitmap.populatedIndex i b
         b' = Bitmap.invert i b
         a' = SmallArray.unset sparseIndex a
-        in SparseSmallArray b' a'
-    else SparseSmallArray b a
+        in By6Bits b' a'
+    else By6Bits b a
 
 -- |
 -- Lookup an item at the index.
 {-# INLINE lookup #-}
-lookup :: Int -> SparseSmallArray e -> Maybe e
-lookup i (SparseSmallArray b a) =
+lookup :: Int -> By6Bits e -> Maybe e
+lookup i (By6Bits b a) =
   {-# SCC "lookup" #-} 
   if Bitmap.isPopulated i b
     then Just (indexSmallArray a (Bitmap.populatedIndex i b))
@@ -127,36 +127,36 @@ lookup i (SparseSmallArray b a) =
 -- |
 -- Convert into a list representation.
 {-# INLINE toMaybeList #-}
-toMaybeList :: SparseSmallArray e -> [Maybe e]
+toMaybeList :: By6Bits e -> [Maybe e]
 toMaybeList ssa = do
   i <- Bitmap.allBitsList
   return (lookup i ssa)
 
 {-# INLINE toIndexedList #-}
-toIndexedList :: SparseSmallArray e -> [(Int, e)]
+toIndexedList :: By6Bits e -> [(Int, e)]
 toIndexedList = catMaybes . zipWith (\i -> fmap (i,)) [0..] . toMaybeList
 
 {-# INLINE elementsUnfoldl #-}
-elementsUnfoldl :: SparseSmallArray e -> Unfoldl e
-elementsUnfoldl (SparseSmallArray _ array) = Unfoldl (\ f z -> foldl' f z array)
+elementsUnfoldl :: By6Bits e -> Unfoldl e
+elementsUnfoldl (By6Bits _ array) = Unfoldl (\ f z -> foldl' f z array)
 
 {-# INLINE elementsUnfoldlM #-}
-elementsUnfoldlM :: Monad m => SparseSmallArray a -> UnfoldlM m a
-elementsUnfoldlM (SparseSmallArray _ array) = SmallArray.elementsUnfoldlM array
+elementsUnfoldlM :: Monad m => By6Bits a -> UnfoldlM m a
+elementsUnfoldlM (By6Bits _ array) = SmallArray.elementsUnfoldlM array
 
 {-# INLINE elementsListT #-}
-elementsListT :: SparseSmallArray a -> ListT STM a
-elementsListT (SparseSmallArray _ array) = SmallArray.elementsListT array
+elementsListT :: By6Bits a -> ListT STM a
+elementsListT (By6Bits _ array) = SmallArray.elementsListT array
 
 {-# INLINE onElementAtFocus #-}
-onElementAtFocus :: Monad m => Int -> Focus a m b -> Focus (SparseSmallArray a) m b
+onElementAtFocus :: Monad m => Int -> Focus a m b -> Focus (By6Bits a) m b
 onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa where
   concealSsa = fmap (fmap aChangeToSsaChange) concealA where
     aChangeToSsaChange = \ case
       Focus.Leave -> Focus.Leave
-      Focus.Set a -> Focus.Set (SparseSmallArray (Bitmap.singleton index) (pure a))
+      Focus.Set a -> Focus.Set (By6Bits (Bitmap.singleton index) (pure a))
       Focus.Remove -> Focus.Leave
-  revealSsa (SparseSmallArray indices array) =
+  revealSsa (By6Bits indices array) =
     fmap (fmap aChangeToSsaChange) $
     if Bitmap.isPopulated index indices 
       then do
@@ -170,21 +170,21 @@ onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa whe
         Focus.Set a -> if Bitmap.isPopulated index indices
           then let
             newArray = SmallArray.set sparseIndex a array
-            in Focus.Set (SparseSmallArray indices newArray)
+            in Focus.Set (By6Bits indices newArray)
           else let
             newIndices = Bitmap.insert index indices
             newArray = SmallArray.insert sparseIndex a array
-            in Focus.Set (SparseSmallArray newIndices newArray)
+            in Focus.Set (By6Bits newIndices newArray)
         Focus.Remove -> let
           newIndices = Bitmap.invert index indices
           in if Bitmap.null newIndices
             then Focus.Remove
             else let
               newArray = SmallArray.unset sparseIndex array
-              in Focus.Set (SparseSmallArray newIndices newArray)
+              in Focus.Set (By6Bits newIndices newArray)
 
 {-# INLINE focusAt #-}
-focusAt :: Monad m => Focus a m b -> Int -> SparseSmallArray a -> m (b, SparseSmallArray a)
+focusAt :: Monad m => Focus a m b -> Int -> By6Bits a -> m (b, By6Bits a)
 focusAt aFocus index = case onElementAtFocus index aFocus of
   Focus conceal reveal -> \ ssa -> do
     (b, change) <- reveal ssa
@@ -194,5 +194,5 @@ focusAt aFocus index = case onElementAtFocus index aFocus of
       Focus.Remove -> empty
 
 {-# INLINE null #-}
-null :: SparseSmallArray a -> Bool
-null (SparseSmallArray bm _) = Bitmap.null bm
+null :: By6Bits a -> Bool
+null (By6Bits bm _) = Bitmap.null bm

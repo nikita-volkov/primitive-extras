@@ -7,13 +7,13 @@ import Test.Tasty
 import Test.Tasty.Runners
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
-import PrimitiveExtras.SparseSmallArray (SparseSmallArray)
+import PrimitiveExtras.By6Bits (By6Bits)
 import qualified Focus
 import qualified Test.QuickCheck as QuickCheck
 import qualified Test.QuickCheck.Property as QuickCheck
 import qualified Main.Transaction as Transaction
 import qualified Main.Gens as Gen
-import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
+import qualified PrimitiveExtras.By6Bits as By6Bits
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified PrimitiveExtras.PrimArray as PrimArray
 import qualified Data.Serialize as Serialize
@@ -63,19 +63,19 @@ main =
           (SmallArray.toList (snd (runIdentity (SmallArray.focusOnFoundElement Focus.delete (== 2) (const False) array))))
     ]
     ,
-    testGroup "SparseSmallArray" $
+    testGroup "By6Bits" $
     [
       testCase "empty" $ do
         assertEqual ""
           (replicate (finiteBitSize (undefined :: Int)) Nothing)
-          (SparseSmallArray.toMaybeList (SparseSmallArray.empty :: SparseSmallArray Int32))
+          (By6Bits.toMaybeList (By6Bits.empty :: By6Bits Int32))
       ,
       testProperty "toMaybeList, maybeList" $ forAll Gen.maybeList $ \ maybeList ->
-      maybeList === SparseSmallArray.toMaybeList (SparseSmallArray.maybeList maybeList)
+      maybeList === By6Bits.toMaybeList (By6Bits.maybeList maybeList)
       ,
       testCase "unset" $ assertEqual ""
         ([Just 1, Nothing, Nothing, Just 3] <> replicate (finiteBitSize (undefined :: Int) - 4) Nothing)
-        (SparseSmallArray.toMaybeList (SparseSmallArray.unset 1 (SparseSmallArray.maybeList [Just 1, Just 2, Nothing, Just 3])))
+        (By6Bits.toMaybeList (By6Bits.unset 1 (By6Bits.maybeList [Just 1, Just 2, Nothing, Just 3])))
       ,
       testTransactionProperty "set" Gen.setTransaction
       ,
@@ -120,12 +120,12 @@ testTransactionProperty name transactionGen =
   testProperty (showString "Transaction: " name) $
   forAll ((,) <$> Gen.maybeList <*> transactionGen) $ \ (maybeList, transaction) ->
   case transaction of
-    Transaction.Transaction name applyToMaybeList applyToSparseSmallArray -> let
-      ssa = SparseSmallArray.maybeList maybeList
+    Transaction.Transaction name applyToMaybeList applyToBy6Bits -> let
+      ssa = By6Bits.maybeList maybeList
       (result1, newMaybeList) = runState applyToMaybeList maybeList
-      (result2, newSsa) = runState applyToSparseSmallArray ssa
-      newSsaMaybeList = SparseSmallArray.toMaybeList newSsa
+      (result2, newSsa) = runState applyToBy6Bits ssa
+      newSsaMaybeList = By6Bits.toMaybeList newSsa
       in
         QuickCheck.counterexample
           ("transaction: " <> show name <> "\nnewMaybeList1: " <> show newMaybeList <> "\nnewMaybeList2: " <> show newSsaMaybeList <> "\nresult1: " <> show result1 <> "\nresult2: " <> show result2)
-          (newMaybeList == SparseSmallArray.toMaybeList newSsa && result1 == result2)
+          (newMaybeList == By6Bits.toMaybeList newSsa && result1 == result2)

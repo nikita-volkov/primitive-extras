@@ -3,7 +3,7 @@ module Main.Transaction where
 import Prelude
 import Focus (Focus(..))
 import qualified Focus
-import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
+import qualified PrimitiveExtras.By6Bits as By6Bits
 import qualified Data.Text as Text
 import qualified DeferredFolds.Unfoldl as Unfoldl
 
@@ -11,7 +11,7 @@ import qualified DeferredFolds.Unfoldl as Unfoldl
 data Transaction element = forall result. (Show result, Eq result) => Transaction {
   name :: Text,
   applyToMaybeList :: State [Maybe element] result,
-  applyToSparseSmallArray :: State (SparseSmallArray.SparseSmallArray element) result
+  applyToBy6Bits :: State (By6Bits.By6Bits element) result
 }
 
 instance Show (Transaction element) where
@@ -25,8 +25,8 @@ singleton index element =
     applyToMaybeList =
       put $ map (\i' -> if index == i' then Just element else Nothing) [0 .. pred (finiteBitSize (undefined :: Int))]
     ,
-    applyToSparseSmallArray =
-      put $ SparseSmallArray.singleton index element
+    applyToBy6Bits =
+      put $ By6Bits.singleton index element
   }
 
 set :: Show element => Int -> element -> Transaction element
@@ -40,11 +40,11 @@ set index element =
         (i', e') <- zip [0..] l
         return $ if index == i' then Just element else e'
     ,
-    applyToSparseSmallArray = do
+    applyToBy6Bits = do
       ssa <- get
-      case SparseSmallArray.lookup index ssa of
-        Just _ -> put (SparseSmallArray.replace index element ssa)
-        Nothing -> put (SparseSmallArray.insert index element ssa)
+      case By6Bits.lookup index ssa of
+        Just _ -> put (By6Bits.replace index element ssa)
+        Nothing -> put (By6Bits.insert index element ssa)
   }
 
 unset :: Int -> Transaction element
@@ -58,8 +58,8 @@ unset index =
         (i', e') <- zip [0..] l
         return $ if index == i' then Nothing else e'
     ,
-    applyToSparseSmallArray =
-      get >>= put . (SparseSmallArray.unset index)
+    applyToBy6Bits =
+      get >>= put . (By6Bits.unset index)
   }
 
 lookup :: (Show element, Eq element) => Int -> Transaction element
@@ -67,7 +67,7 @@ lookup index =
   Transaction {
     name = "lookup " <> fromString (show index),
     applyToMaybeList = fmap (join . fmap fst . uncons . drop index) get,
-    applyToSparseSmallArray = fmap (SparseSmallArray.lookup index) get
+    applyToBy6Bits = fmap (By6Bits.lookup index) get
   }
 
 elementsUnfoldl :: (Show element, Eq element) => Transaction element
@@ -80,7 +80,7 @@ elementsUnfoldl =
         maybeElement <- Unfoldl.foldable list
         element <- Unfoldl.foldable maybeElement
         return element,
-    applyToSparseSmallArray = fmap SparseSmallArray.elementsUnfoldl get
+    applyToBy6Bits = fmap By6Bits.elementsUnfoldl get
   }
 
 focusAt :: (Show element, Eq result, Show result) => Text -> Focus element Identity result -> Int -> Transaction element
@@ -101,7 +101,7 @@ focusAt focusName focus index =
             return result
           _ -> error "Index out of bounds"
     ,
-    applyToSparseSmallArray = StateT (SparseSmallArray.focusAt focus index)
+    applyToBy6Bits = StateT (By6Bits.focusAt focus index)
   }
 
 focusInsert :: Show element => Int -> element -> Transaction element

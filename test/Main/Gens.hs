@@ -6,7 +6,7 @@ import Focus (Focus(..))
 import Main.Transaction (Transaction)
 import Data.Primitive
 import qualified Main.Transaction as Transaction
-import qualified PrimitiveExtras.SparseSmallArray as SparseSmallArray
+import qualified PrimitiveExtras.By6Bits as By6Bits
 
 
 element :: Gen Int
@@ -52,9 +52,9 @@ maybeList =
     (1, pure Nothing)
   ]
 
-sparseSmallArray :: Gen (SparseSmallArray.SparseSmallArray Int)
+sparseSmallArray :: Gen (By6Bits.By6Bits Int)
 sparseSmallArray =
-  SparseSmallArray.maybeList <$> maybeList
+  By6Bits.maybeList <$> maybeList
 
 primArray :: Prim a => Gen a -> Gen (PrimArray a)
 primArray aGen = do
