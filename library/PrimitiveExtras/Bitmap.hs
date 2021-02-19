@@ -14,7 +14,7 @@ module PrimitiveExtras.Bitmap
   null,
   bits,
   populatedIndicesList,
-  int,
+  int64,
   allBitsList,
   allBitsUnfoldl,
   populatedBitsUnfoldl,
@@ -54,11 +54,11 @@ singleton = Bitmap . bit
 
 {-# INLINE insert #-}
 insert :: Int -> Bitmap -> Bitmap
-insert i = Bitmap . (bit i .|.) . int
+insert i = Bitmap . (bit i .|.) . int64
 
 {-# INLINE invert #-}
 invert :: Int -> Bitmap -> Bitmap
-invert i = Bitmap . (bit i `xor`) . int
+invert i = Bitmap . (bit i `xor`) . int64
 
 {-# INLINE indexList #-}
 indexList :: [Int] -> Bitmap
@@ -101,9 +101,9 @@ bits (Bitmap int) = filter (testBit int) allBitsList
 populatedIndicesList :: Bitmap -> [Int]
 populatedIndicesList = enumFromTo 0 . pred . population
 
-{-# INLINE int #-}
-int :: Bitmap -> Int
-int (Bitmap int) = int
+{-# INLINE int64 #-}
+int64 :: Bitmap -> Int64
+int64 (Bitmap int) = int
 
 {-# NOINLINE allBitsUnfoldl #-}
 allBitsUnfoldl :: Unfoldl Int
