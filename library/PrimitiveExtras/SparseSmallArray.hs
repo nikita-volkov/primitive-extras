@@ -7,6 +7,7 @@ module PrimitiveExtras.SparseSmallArray
   pair,
   insert,
   replace,
+  update,
   unset,
   lookup,
   focusAt,
