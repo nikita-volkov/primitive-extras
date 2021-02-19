@@ -89,6 +89,15 @@ replace i e (SparseSmallArray b a) =
     sparseIndex = Bitmap.populatedIndex i b
     in SparseSmallArray b (SmallArray.set sparseIndex e a)
 
+{-# INLINE update #-}
+update :: (e -> e) -> Int -> SparseSmallArray e -> SparseSmallArray e
+update fn i (SparseSmallArray b a) =
+  let
+    sparseIndex = Bitmap.populatedIndex i b
+    in
+      SparseSmallArray b
+        (SmallArray.unsafeUpdate fn sparseIndex a)
+
 -- |
 -- Remove an element.
 {-# INLINE unset #-}
