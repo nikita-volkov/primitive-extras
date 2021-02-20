@@ -8,6 +8,7 @@ module PrimitiveExtras.By6Bits
   insert,
   replace,
   adjust,
+  alterF,
   unset,
   lookup,
   focusAt,
@@ -98,6 +99,34 @@ adjust fn i (By6Bits b a) =
     in
       By6Bits b
         (SmallArray.unsafeAdjust fn sparseIndex a)
+
+{-# INLINE alterF #-}
+alterF :: Functor f => f (Maybe e) -> (e -> f (Maybe e)) -> Int -> By6Bits e -> f (By6Bits e)
+alterF onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
+  let
+    bitAtIndex = bit key
+    isPopulated = bitmap .&. bitAtIndex /= 0
+    populatedIndex = popCount (bitmap .&. pred bitAtIndex)
+    in if isPopulated
+      then let
+        element = indexSmallArray array populatedIndex
+        in
+          onPresent element
+            & fmap (\case
+                Just newElement -> let
+                  newArray = SmallArray.set populatedIndex newElement array
+                  in By6Bits (Bitmap bitmap) newArray
+                Nothing -> let
+                  newBitmap = xor bitmap bitAtIndex
+                  newArray = SmallArray.unset populatedIndex array
+                  in By6Bits (Bitmap newBitmap) newArray)
+      else
+        onMissing & fmap (\case
+          Just newElement -> let
+            newArray = SmallArray.insert populatedIndex newElement array
+            newBitmap = bitmap .|. bitAtIndex
+            in By6Bits (Bitmap newBitmap) newArray
+          Nothing -> By6Bits (Bitmap bitmap) array)
 
 -- |
 -- Remove an element.
