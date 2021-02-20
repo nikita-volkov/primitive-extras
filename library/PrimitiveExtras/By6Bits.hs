@@ -8,7 +8,7 @@ module PrimitiveExtras.By6Bits
   insert,
   replace,
   adjust,
-  alterF,
+  reassambleAt,
   unset,
   lookup,
   focusAt,
@@ -100,9 +100,20 @@ adjust fn i (By6Bits b a) =
       By6Bits b
         (SmallArray.unsafeAdjust fn sparseIndex a)
 
-{-# INLINE alterF #-}
-alterF :: Functor f => f (Maybe e) -> (e -> f (Maybe e)) -> Int -> By6Bits e -> f (By6Bits e)
-alterF onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
+{-|
+Very much like @alterF@ of the \"containers\" package
+with two differences:
+
+- For better performance @(Maybe e -> f (Maybe e))@ is replaced with
+  the following two continuations: @f (Maybe e)@ and @(e -> f (Maybe e))@.
+- The result is packed in @Maybe@ to inform you whether the map
+  has become empty.
+  This is useful for working with tries, since it can be used as
+  a single to remove from a wrapping container.
+-}
+{-# INLINE reassambleAt #-}
+reassambleAt :: Functor f => f (Maybe e) -> (e -> f (Maybe e)) -> Int -> By6Bits e -> f (Maybe (By6Bits e))
+reassambleAt onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
   let
     bitAtIndex = bit key
     isPopulated = bitmap .&. bitAtIndex /= 0
@@ -115,18 +126,22 @@ alterF onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
             & fmap (\case
                 Just newElement -> let
                   newArray = SmallArray.set populatedIndex newElement array
-                  in By6Bits (Bitmap bitmap) newArray
+                  in Just (By6Bits (Bitmap bitmap) newArray)
                 Nothing -> let
                   newBitmap = xor bitmap bitAtIndex
                   newArray = SmallArray.unset populatedIndex array
-                  in By6Bits (Bitmap newBitmap) newArray)
+                  in if newBitmap == 0
+                    then Nothing
+                    else Just (By6Bits (Bitmap newBitmap) newArray))
       else
         onMissing & fmap (\case
           Just newElement -> let
             newArray = SmallArray.insert populatedIndex newElement array
             newBitmap = bitmap .|. bitAtIndex
-            in By6Bits (Bitmap newBitmap) newArray
-          Nothing -> By6Bits (Bitmap bitmap) array)
+            in Just (By6Bits (Bitmap newBitmap) newArray)
+          Nothing -> if bitmap == 0
+            then Nothing
+            else Just (By6Bits (Bitmap bitmap) array))
 
 -- |
 -- Remove an element.
