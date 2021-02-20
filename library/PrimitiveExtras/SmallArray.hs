@@ -47,12 +47,15 @@ unset index array =
 set :: Int -> a -> SmallArray a -> SmallArray a
 set index a array =
   {-# SCC "set" #-} 
-  let
-    size = sizeofSmallArray array
-    in runST $ do
-      m <- thawSmallArray array 0 size
-      writeSmallArray m index a
-      unsafeFreezeSmallArray m
+  unsafeSetWithSize index a (sizeofSmallArray array) array
+
+{-# INLINE unsafeSetWithSize #-}
+unsafeSetWithSize :: Int -> a -> Int -> SmallArray a -> SmallArray a
+unsafeSetWithSize index a size array =
+  runST $ do
+    m <- thawSmallArray array 0 size
+    writeSmallArray m index a
+    unsafeFreezeSmallArray m
 
 {-# INLINE insert #-}
 insert :: Int -> a -> SmallArray a -> SmallArray a
@@ -121,22 +124,31 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
-{-# INLINE findAndRevision #-}
-findAndRevision :: Functor f => (a -> Bool) -> f (Maybe a) -> (a -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
-findAndRevision validate onMissing onPresent array =
-  findWithIndex validate array & \case
-    Just (index, element) ->
-      onPresent element & fmap (\case
-        Just newElement -> Just (set index newElement array)
-        Nothing -> if sizeofSmallArray array == 1
-          then Nothing
-          else Just (unset index array)
-        )
-    Nothing ->
-      onMissing & fmap (\case
-        Just newElement -> Just (cons newElement array)
-        Nothing -> Just array
-        )
+{-# INLINE detectAndRevision #-}
+detectAndRevision :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
+detectAndRevision detect onMissing onPresent array =
+  let
+    size = sizeofSmallArray array
+    iterate index =
+      if index < size
+        then let
+          element = indexSmallArray array index
+          in case detect element of
+            Just detectedElement ->
+              onPresent detectedElement & fmap (\case
+                Just newElement -> Just (unsafeSetWithSize index newElement size array)
+                Nothing -> if size == 1
+                  then Nothing
+                  else Just (unset index array)
+                )
+            Nothing ->
+              iterate (succ index)
+        else
+          onMissing & fmap (\case
+            Just newElement -> Just (cons newElement array)
+            Nothing -> Just array
+            )
+    in iterate 0
 
 {-|
 Find the first matching element,
