@@ -121,6 +121,19 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
+{-# INLINE findAndReplace #-}
+findAndReplace :: (a -> Maybe a) -> SmallArray a -> SmallArray a
+findAndReplace f array =
+  let
+    size = sizeofSmallArray array
+    iterate index =
+      if index < size
+        then case f (indexSmallArray array index) of
+          Just newElement -> set index newElement array
+          Nothing -> iterate (succ index)
+        else array
+    in iterate 0
+
 {-# INLINE find #-}
 find :: (a -> Bool) -> SmallArray a -> Maybe a
 find test array =
