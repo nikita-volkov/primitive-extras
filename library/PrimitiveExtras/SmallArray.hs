@@ -121,9 +121,32 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
+{-|
+Find the first matching element,
+return it and new array which has it replaced by the value produced
+by the supplied continuation.
+-}
 {-# INLINE findAndReplace #-}
-findAndReplace :: (a -> Maybe a) -> SmallArray a -> SmallArray a
+findAndReplace :: (a -> Maybe a) -> SmallArray a -> (Maybe a, SmallArray a)
 findAndReplace f array =
+  let
+    size = sizeofSmallArray array
+    iterate index =
+      if index < size
+        then let
+          element = indexSmallArray array index
+          in case f element of
+            Just newElement -> (Just element, set index newElement array)
+            Nothing -> iterate (succ index)
+        else (Nothing, array)
+    in iterate 0
+
+{-|
+Find the first matching element and replace it.
+-}
+{-# INLINE findReplacing #-}
+findReplacing :: (a -> Maybe a) -> SmallArray a -> SmallArray a
+findReplacing f array =
   let
     size = sizeofSmallArray array
     iterate index =
@@ -134,9 +157,12 @@ findAndReplace f array =
         else array
     in iterate 0
 
-{-# INLINE findAndMap #-}
-findAndMap :: (a -> Maybe b) -> SmallArray a -> Maybe b
-findAndMap f array =
+{-|
+Find the first matching element and return it.
+-}
+{-# INLINE findMapping #-}
+findMapping :: (a -> Maybe b) -> SmallArray a -> Maybe b
+findMapping f array =
   let
     size = sizeofSmallArray array
     iterate index =
