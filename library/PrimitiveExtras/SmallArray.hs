@@ -48,12 +48,11 @@ set :: Int -> a -> SmallArray a -> SmallArray a
 set index a array =
   {-# SCC "set" #-} 
   let
-    !size = sizeofSmallArray array
-    in runSmallArray $ do
-      newMa <- newSmallArray size undefined
-      copySmallArray newMa 0 array 0 size
-      writeSmallArray newMa index a
-      return newMa
+    size = sizeofSmallArray array
+    in runST $ do
+      m <- thawSmallArray array 0 size
+      writeSmallArray m index a
+      unsafeFreezeSmallArray m
 
 {-# INLINE insert #-}
 insert :: Int -> a -> SmallArray a -> SmallArray a
