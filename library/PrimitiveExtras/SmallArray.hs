@@ -121,6 +121,23 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
+{-# INLINE findAndRevision #-}
+findAndRevision :: Functor f => (a -> Bool) -> f (Maybe a) -> (a -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
+findAndRevision validate onMissing onPresent array =
+  findWithIndex validate array & \case
+    Just (index, element) ->
+      onPresent element & fmap (\case
+        Just newElement -> Just (set index newElement array)
+        Nothing -> if sizeofSmallArray array == 1
+          then Nothing
+          else Just (unset index array)
+        )
+    Nothing ->
+      onMissing & fmap (\case
+        Just newElement -> Just (cons newElement array)
+        Nothing -> Just array
+        )
+
 {-|
 Find the first matching element,
 return it and new array which has it replaced by the value produced
