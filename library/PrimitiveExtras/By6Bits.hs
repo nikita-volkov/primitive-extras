@@ -8,7 +8,7 @@ module PrimitiveExtras.By6Bits
   insert,
   replace,
   adjust,
-  reassambleAt,
+  revision,
   unset,
   lookup,
   focusAt,
@@ -111,9 +111,9 @@ with two differences:
   This is useful for working with tries, since it can be used as
   a single to remove from a wrapping container.
 -}
-{-# INLINE reassambleAt #-}
-reassambleAt :: Functor f => f (Maybe e) -> (e -> f (Maybe e)) -> Int -> By6Bits e -> f (Maybe (By6Bits e))
-reassambleAt onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
+{-# INLINE revision #-}
+revision :: Functor f => f (Maybe e) -> (e -> f (Maybe e)) -> Int -> By6Bits e -> f (Maybe (By6Bits e))
+revision onMissing onPresent key (By6Bits (Bitmap bitmap) array) =
   let
     bitAtIndex = bit key
     isPopulated = bitmap .&. bitAtIndex /= 0
