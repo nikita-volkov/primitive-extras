@@ -134,6 +134,19 @@ findAndReplace f array =
         else array
     in iterate 0
 
+{-# INLINE findAndMap #-}
+findAndMap :: (a -> Maybe b) -> SmallArray a -> Maybe b
+findAndMap f array =
+  let
+    size = sizeofSmallArray array
+    iterate index =
+      if index < size
+        then case f (indexSmallArray array index) of
+          Just b -> Just b
+          Nothing -> iterate (succ index)
+        else Nothing
+    in iterate 0
+
 {-# INLINE find #-}
 find :: (a -> Bool) -> SmallArray a -> Maybe a
 find test array =
