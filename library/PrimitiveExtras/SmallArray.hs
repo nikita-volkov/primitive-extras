@@ -124,16 +124,16 @@ orderedPair i1 e1 i2 e2 =
       a <- newSmallArray 1 e2
       return a
 
-{-# INLINE detectAndRevision #-}
-detectAndRevision :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
-detectAndRevision detect onMissing onPresent array =
+{-# INLINE revisionSelected #-}
+revisionSelected :: Functor f => (a -> Maybe b) -> f (Maybe a) -> (b -> f (Maybe a)) -> SmallArray a -> f (Maybe (SmallArray a))
+revisionSelected select onMissing onPresent array =
   let
     size = sizeofSmallArray array
     iterate index =
       if index < size
         then let
           element = indexSmallArray array index
-          in case detect element of
+          in case select element of
             Just detectedElement ->
               onPresent detectedElement & fmap (\case
                 Just newElement -> Just (unsafeSetWithSize index newElement size array)
