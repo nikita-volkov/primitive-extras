@@ -69,23 +69,23 @@ insert index a array =
       copySmallArray newMa nextIndex array index amountOfFollowingElements
       return newMa
 
-{-# INLINE update #-}
-update :: (a -> a) -> Int -> SmallArray a -> SmallArray a
-update fn index array =
+{-# INLINE adjust #-}
+adjust :: (a -> a) -> Int -> SmallArray a -> SmallArray a
+adjust fn index array =
   let
     size = sizeofSmallArray array
     in if size > index && index >= 0
-      then unsafeUpdateWithSize fn index size array
+      then unsafeAdjustWithSize fn index size array
       else array
 
-{-# INLINE unsafeUpdate #-}
-unsafeUpdate :: (a -> a) -> Int -> SmallArray a -> SmallArray a
-unsafeUpdate fn index array =
-  unsafeUpdateWithSize fn index (sizeofSmallArray array) array
+{-# INLINE unsafeAdjust #-}
+unsafeAdjust :: (a -> a) -> Int -> SmallArray a -> SmallArray a
+unsafeAdjust fn index array =
+  unsafeAdjustWithSize fn index (sizeofSmallArray array) array
 
-{-# INLINE unsafeUpdateWithSize #-}
-unsafeUpdateWithSize :: (a -> a) -> Int -> Int -> SmallArray a -> SmallArray a
-unsafeUpdateWithSize fn index size array =
+{-# INLINE unsafeAdjustWithSize #-}
+unsafeAdjustWithSize :: (a -> a) -> Int -> Int -> SmallArray a -> SmallArray a
+unsafeAdjustWithSize fn index size array =
   runST $ do
     m <- thawSmallArray array 0 size
     element <- readSmallArray m index

@@ -7,7 +7,7 @@ module PrimitiveExtras.By6Bits
   pair,
   insert,
   replace,
-  update,
+  adjust,
   unset,
   lookup,
   focusAt,
@@ -90,14 +90,14 @@ replace i e (By6Bits b a) =
     sparseIndex = Bitmap.populatedIndex i b
     in By6Bits b (SmallArray.set sparseIndex e a)
 
-{-# INLINE update #-}
-update :: (e -> e) -> Int -> By6Bits e -> By6Bits e
-update fn i (By6Bits b a) =
+{-# INLINE adjust #-}
+adjust :: (e -> e) -> Int -> By6Bits e -> By6Bits e
+adjust fn i (By6Bits b a) =
   let
     sparseIndex = Bitmap.populatedIndex i b
     in
       By6Bits b
-        (SmallArray.unsafeUpdate fn sparseIndex a)
+        (SmallArray.unsafeAdjust fn sparseIndex a)
 
 -- |
 -- Remove an element.
