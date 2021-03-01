@@ -307,3 +307,21 @@ focusOnFoundElement focus testAsKey testWholeEntry = case onFoundElementFocus te
 
 toList :: forall a. SmallArray a -> [a]
 toList array = PrimitiveExtras.Prelude.toList (elementsUnfoldlM array :: UnfoldlM Identity a)
+
+drop :: Int -> SmallArray a -> SmallArray a
+drop amount array =
+  cloneSmallArray array amount (sizeofSmallArray array - amount)
+
+split :: Int -> SmallArray a -> (SmallArray a, SmallArray a)
+split amount array =
+  (cloneSmallArray array 0 amount,
+    cloneSmallArray array amount (sizeofSmallArray array - amount))
+
+foldrRange :: Int -> Int -> (a -> b -> b) -> b -> SmallArray a -> b
+foldrRange start indexAfter step acc array =
+  loop start
+  where
+    loop index =
+      if index < indexAfter
+        then case indexSmallArray## array index of (# a #) -> step a (loop (succ index))
+        else acc
