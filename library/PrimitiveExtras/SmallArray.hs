@@ -338,6 +338,6 @@ foldMInRange startIndex afterIndex (FoldM step start end) array =
   where
     newStep a next acc = step acc a >>= next
 
-unfoldrInRange :: Int -> Int -> SmallArray a -> Unfoldr a
-unfoldrInRange startIndex afterIndex array =
+inRangeUnfoldr :: Int -> Int -> SmallArray a -> Unfoldr a
+inRangeUnfoldr startIndex afterIndex array =
   Unfoldr (\step acc -> foldrInRange startIndex afterIndex step acc array)
