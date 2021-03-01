@@ -317,11 +317,23 @@ split amount array =
   (cloneSmallArray array 0 amount,
     cloneSmallArray array amount (sizeofSmallArray array - amount))
 
-foldrRange :: Int -> Int -> (a -> b -> b) -> b -> SmallArray a -> b
-foldrRange start indexAfter step acc array =
+foldrInRange :: Int -> Int -> (a -> b -> b) -> b -> SmallArray a -> b
+foldrInRange start indexAfter step acc array =
   loop start
   where
     loop index =
       if index < indexAfter
         then case indexSmallArray## array index of (# a #) -> step a (loop (succ index))
         else acc
+
+foldInRange :: Int -> Int -> Fold a b -> SmallArray a -> b
+foldInRange startIndex afterIndex (Fold step start end) array =
+  end (foldrInRange startIndex afterIndex newStep id array start)
+  where
+    newStep a next acc = next $! step acc a
+
+foldMInRange :: Monad m => Int -> Int -> FoldM m a b -> SmallArray a -> m b
+foldMInRange startIndex afterIndex (FoldM step start end) array =
+  start >>= foldrInRange startIndex afterIndex newStep end array
+  where
+    newStep a next acc = step acc a >>= next
