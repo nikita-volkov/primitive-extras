@@ -114,6 +114,12 @@ unsafeIndexAndAdjustWithSize fn index size array =
     newArray <- unsafeFreezeSmallArray m
     return (element, newArray)
 
+{-# INLINE unsafeAdjustF #-}
+unsafeAdjustF :: Functor f => (a -> f a) -> Int -> SmallArray a -> f (SmallArray a)
+unsafeAdjustF fn index array =
+  fn (indexSmallArray array index)
+    & fmap (\newElement -> set index newElement array)
+
 {-# INLINE cons #-}
 cons :: a -> SmallArray a -> SmallArray a
 cons a array =
