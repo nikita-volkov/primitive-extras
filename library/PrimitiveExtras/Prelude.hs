@@ -81,6 +81,7 @@ import Data.Profunctor.Strong as Exports
 
 -- deferred-folds
 -------------------------
+import DeferredFolds.Unfoldr as Exports (Unfoldr(..))
 import DeferredFolds.Unfoldl as Exports (Unfoldl(..))
 import DeferredFolds.UnfoldlM as Exports (UnfoldlM(..))
 
