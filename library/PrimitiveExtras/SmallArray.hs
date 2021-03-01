@@ -13,6 +13,10 @@ import qualified ListT
 newEmptySmallArray :: PrimMonad m => Int -> m (SmallMutableArray (PrimState m) a)
 newEmptySmallArray size = newSmallArray size (unsafeCoerce 0)
 
+singleton :: a -> SmallArray a
+singleton value =
+  runST (newSmallArray 1 value >>= unsafeFreezeSmallArray)
+
 {-# INLINE list #-}
 list :: [a] -> SmallArray a
 list list =
@@ -94,6 +98,21 @@ unsafeAdjustWithSize fn index size array =
     element <- readSmallArray m index
     writeSmallArray m index $! fn element
     unsafeFreezeSmallArray m
+
+{-# INLINE unsafeIndexAndAdjust #-}
+unsafeIndexAndAdjust :: (a -> a) -> Int -> SmallArray a -> (a, SmallArray a)
+unsafeIndexAndAdjust fn index array =
+  unsafeIndexAndAdjustWithSize fn index (sizeofSmallArray array) array
+
+{-# INLINE unsafeIndexAndAdjustWithSize #-}
+unsafeIndexAndAdjustWithSize :: (a -> a) -> Int -> Int -> SmallArray a -> (a, SmallArray a)
+unsafeIndexAndAdjustWithSize fn index size array =
+  runST $ do
+    m <- thawSmallArray array 0 size
+    element <- readSmallArray m index
+    writeSmallArray m index $! fn element
+    newArray <- unsafeFreezeSmallArray m
+    return (element, newArray)
 
 {-# INLINE cons #-}
 cons :: a -> SmallArray a -> SmallArray a
