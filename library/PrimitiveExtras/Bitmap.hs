@@ -22,7 +22,7 @@ module PrimitiveExtras.Bitmap
 )
 where
 
-import PrimitiveExtras.Prelude hiding (traverse_, insert, null, empty)
+import PrimitiveExtras.Prelude hiding (traverse_, insert, null, empty, singleton)
 import PrimitiveExtras.Types
 import qualified DeferredFolds.Unfoldl as Unfoldl
 

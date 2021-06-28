@@ -21,7 +21,7 @@ module PrimitiveExtras.By6Bits
 )
 where
 
-import PrimitiveExtras.Prelude hiding (lookup, empty, insert, null)
+import PrimitiveExtras.Prelude hiding (lookup, empty, insert, null, singleton)
 import PrimitiveExtras.Types
 import qualified PrimitiveExtras.Prelude as Prelude
 import qualified PrimitiveExtras.Bitmap as Bitmap
