@@ -2,7 +2,7 @@ module PrimitiveExtras.Bitmap
 (
   Bitmap(..),
   empty,
-  singleton,
+  PrimitiveExtras.Bitmap.singleton,
   insert,
   invert,
   indexList,

@@ -2,7 +2,7 @@ module PrimitiveExtras.By6Bits
 (
   By6Bits,
   empty,
-  singleton,
+  PrimitiveExtras.By6Bits.singleton,
   maybeList,
   pair,
   insert,
@@ -52,7 +52,7 @@ empty = By6Bits Bitmap.empty Prelude.empty
 -- An array with a single element at the specified index.
 {-# INLINE singleton #-}
 singleton :: Int -> e -> By6Bits e
-singleton i e = 
+singleton i e =
   let b = Bitmap.singleton i
       a = runST $ newSmallArray 1 e >>= unsafeFreezeSmallArray
       in By6Bits b a
@@ -60,9 +60,9 @@ singleton i e =
 {-# INLINE pair #-}
 pair :: Int -> e -> Int -> e -> By6Bits e
 pair i1 e1 i2 e2 =
-  {-# SCC "pair" #-} 
+  {-# SCC "pair" #-}
   By6Bits bitmap array
-  where 
+  where
     bitmap = Bitmap.pair i1 i2
     array = SmallArray.orderedPair i1 e1 i2 e2
 
@@ -78,15 +78,15 @@ It's your obligation to ensure that the index is empty before the operation.
 {-# INLINE insert #-}
 insert :: Int -> e -> By6Bits e -> By6Bits e
 insert i e (By6Bits b a) =
-  {-# SCC "insert" #-} 
+  {-# SCC "insert" #-}
   let
     sparseIndex = Bitmap.populatedIndex i b
     in By6Bits (Bitmap.insert i b) (SmallArray.insert sparseIndex e a)
-    
+
 {-# INLINE replace #-}
 replace :: Int -> e -> By6Bits e -> By6Bits e
 replace i e (By6Bits b a) =
-  {-# SCC "replace" #-} 
+  {-# SCC "replace" #-}
   let
     sparseIndex = Bitmap.populatedIndex i b
     in By6Bits b (SmallArray.set sparseIndex e a)
@@ -165,7 +165,7 @@ unset i (By6Bits (Bitmap b) a) =
 {-# INLINE lookup #-}
 lookup :: Int -> By6Bits e -> Maybe e
 lookup i (By6Bits b a) =
-  {-# SCC "lookup" #-} 
+  {-# SCC "lookup" #-}
   if Bitmap.isPopulated i b
     then Just (indexSmallArray a (Bitmap.populatedIndex i b))
     else Nothing
@@ -204,7 +204,7 @@ onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa whe
       Focus.Remove -> Focus.Leave
   revealSsa (By6Bits indices array) =
     fmap (fmap aChangeToSsaChange) $
-    if Bitmap.isPopulated index indices 
+    if Bitmap.isPopulated index indices
       then do
         a <- indexSmallArrayM array (Bitmap.populatedIndex index indices)
         revealA a
