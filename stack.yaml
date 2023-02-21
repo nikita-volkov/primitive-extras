@@ -1,5 +1,0 @@
-resolver: nightly-2022-10-11
-extra-deps:
-  - vector-0.13.0.0
-  - generically-0.1
-allow-newer: true
