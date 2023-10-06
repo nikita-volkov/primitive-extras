@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
 module PrimitiveExtras.By6Bits
   ( By6Bits,
     empty,
@@ -20,7 +22,6 @@ module PrimitiveExtras.By6Bits
   )
 where
 
-import qualified Control.Foldl as Foldl
 import qualified Focus
 import qualified PrimitiveExtras.Bitmap as Bitmap
 import PrimitiveExtras.Prelude hiding (empty, insert, lookup, null, singleton)

@@ -17,9 +17,6 @@ unsafeIO stepInIO initInIO extractInIO =
     (unsafeDupablePerformIO initInIO)
     (\state -> let !output = unsafePerformIO (extractInIO state) in output)
 
-foldMInUnsafeDupableIO :: FoldM IO input output -> Fold input output
-foldMInUnsafeDupableIO (FoldM step init extract) = unsafeIO step init extract
-
 -- |
 -- Given a size of the array,
 -- construct a fold, which produces an array of index counts.

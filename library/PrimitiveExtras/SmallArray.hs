@@ -4,7 +4,6 @@ import qualified Focus
 import GHC.Exts hiding (toList)
 import qualified ListT
 import PrimitiveExtras.Prelude
-import PrimitiveExtras.Types
 
 -- | A workaround for the weird forcing of 'undefined' values int 'newSmallArray'
 {-# INLINE newEmptySmallArray #-}
