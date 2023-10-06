@@ -1,7 +1,6 @@
 module Main.Gens where
 
 import Data.Primitive
-import Focus (Focus (..))
 import Main.Transaction (Transaction)
 import qualified Main.Transaction as Transaction
 import qualified PrimitiveExtras.By6Bits as By6Bits

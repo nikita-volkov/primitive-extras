@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
 module PrimitiveExtras.Bitmap
   ( Bitmap (..),
     empty,

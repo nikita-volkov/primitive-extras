@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-redundant-constraints #-}
 module PrimitiveExtras.PrimArray where
 
 import qualified Data.ByteString.Short.Internal as ShortByteString
@@ -7,7 +8,6 @@ import qualified Data.Vector.Unboxed as UnboxedVector
 import qualified PrimitiveExtras.FoldMs as FoldMs
 import qualified PrimitiveExtras.Folds as Folds
 import PrimitiveExtras.Prelude hiding (replicateM, traverse_)
-import PrimitiveExtras.Types
 
 -- |
 -- Construct from a primitive vector.
@@ -76,6 +76,7 @@ replicateM size elementM =
             else return (unsafePerformIO (unsafeFreezePrimArray mutable))
      in iterate 0
 
+traverse_ :: (Applicative f, Prim a) => (a -> f b) -> PrimArray a -> f ()
 traverse_ = traversePrimArray_
 
 traverseWithIndexInRange_ :: (Prim a) => PrimArray a -> Int -> Int -> (Int -> a -> IO ()) -> IO ()

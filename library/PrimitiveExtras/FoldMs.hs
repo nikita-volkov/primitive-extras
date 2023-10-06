@@ -2,8 +2,6 @@ module PrimitiveExtras.FoldMs where
 
 import Control.Foldl
 import PrimitiveExtras.Prelude hiding (fold, foldM)
-import PrimitiveExtras.Types
-import qualified PrimitiveExtras.UnliftedArray as UA
 
 -- |
 -- Given a size of the array,

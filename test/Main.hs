@@ -11,14 +11,12 @@ import qualified PrimitiveExtras.By6Bits as By6Bits
 import qualified PrimitiveExtras.PrimArray as PrimArray
 import qualified PrimitiveExtras.SmallArray as SmallArray
 import qualified Test.QuickCheck as QuickCheck
-import Test.QuickCheck.Instances
-import qualified Test.QuickCheck.Property as QuickCheck
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.QuickCheck
-import Test.Tasty.Runners
 import Prelude hiding (choose)
 
+main :: IO ()
 main =
   defaultMain $
     testGroup "All" $
@@ -104,6 +102,8 @@ main =
           ]
       ]
 
+
+testTransactionProperty :: String -> Gen (Transaction.Transaction Int) -> TestTree
 testTransactionProperty name transactionGen =
   testProperty (showString "Transaction: " name) $
     forAll ((,) <$> Gen.maybeList <*> transactionGen) $ \(maybeList, transaction) ->

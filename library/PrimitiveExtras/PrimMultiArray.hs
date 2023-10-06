@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-redundant-constraints -Wno-orphans #-}
 module PrimitiveExtras.PrimMultiArray
   ( PrimMultiArray,
     create,
