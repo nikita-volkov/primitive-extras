@@ -1,13 +1,12 @@
 module Main.Gens where
 
-import Prelude hiding (choose, index)
-import Test.QuickCheck.Gen
-import Focus (Focus(..))
-import Main.Transaction (Transaction)
 import Data.Primitive
+import Focus (Focus (..))
+import Main.Transaction (Transaction)
 import qualified Main.Transaction as Transaction
 import qualified PrimitiveExtras.By6Bits as By6Bits
-
+import Test.QuickCheck.Gen
+import Prelude hiding (choose, index)
 
 element :: Gen Int
 element = choose (0, 999)
@@ -36,8 +35,7 @@ unfoldlTransaction = pure Transaction.elementsUnfoldl
 transaction :: Gen (Transaction Int)
 transaction =
   frequency
-    [
-      (9, lookupTransaction),
+    [ (9, lookupTransaction),
       (9, setTransaction),
       (9, unsetTransaction),
       (9, focusInsertTransaction),
@@ -46,17 +44,17 @@ transaction =
 
 maybeList :: Gen [Maybe Int]
 maybeList =
-  replicateM (finiteBitSize (undefined :: Int)) $ frequency $
-  [
-    (4, fmap Just element),
-    (1, pure Nothing)
-  ]
+  replicateM (finiteBitSize (undefined :: Int)) $
+    frequency $
+      [ (4, fmap Just element),
+        (1, pure Nothing)
+      ]
 
 sparseSmallArray :: Gen (By6Bits.By6Bits Int)
 sparseSmallArray =
   By6Bits.maybeList <$> maybeList
 
-primArray :: Prim a => Gen a -> Gen (PrimArray a)
+primArray :: (Prim a) => Gen a -> Gen (PrimArray a)
 primArray aGen = do
   list <- listOf aGen
   return (primArrayFromList list)
