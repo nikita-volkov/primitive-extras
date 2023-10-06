@@ -102,7 +102,6 @@ main =
           ]
       ]
 
-
 testTransactionProperty :: String -> Gen (Transaction.Transaction Int) -> TestTree
 testTransactionProperty name transactionGen =
   testProperty (showString "Transaction: " name) $

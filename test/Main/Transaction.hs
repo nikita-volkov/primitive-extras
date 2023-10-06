@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+
 module Main.Transaction where
 
 import qualified Data.Text as Text

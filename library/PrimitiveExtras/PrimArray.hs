@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+
 module PrimitiveExtras.PrimArray where
 
 import qualified Data.ByteString.Short.Internal as ShortByteString

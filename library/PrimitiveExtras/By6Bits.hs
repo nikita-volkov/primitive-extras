@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -Wno-orphans #-}
+
 module PrimitiveExtras.By6Bits
   ( By6Bits,
     empty,
