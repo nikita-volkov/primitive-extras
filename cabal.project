@@ -1,0 +1,8 @@
+packages: .
+with-compiler: ghc-9.6
+constraints:
+  , primitive >=0.9
+allow-newer:
+  , vector:primitive
+  , foldl:primitive
+  , deferred-folds:primitive
