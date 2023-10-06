@@ -1,31 +1,29 @@
 module PrimitiveExtras.Bitmap
-(
-  Bitmap(..),
-  empty,
-  singleton,
-  insert,
-  invert,
-  indexList,
-  boolList,
-  pair,
-  populatedIndex,
-  isPopulated,
-  population,
-  null,
-  bits,
-  populatedIndicesList,
-  int64,
-  allBitsList,
-  allBitsUnfoldl,
-  populatedBitsUnfoldl,
-  indicesAmongstPopulatedBitsUnfoldl,
-)
+  ( Bitmap (..),
+    empty,
+    singleton,
+    insert,
+    invert,
+    indexList,
+    boolList,
+    pair,
+    populatedIndex,
+    isPopulated,
+    population,
+    null,
+    bits,
+    populatedIndicesList,
+    int64,
+    allBitsList,
+    allBitsUnfoldl,
+    populatedBitsUnfoldl,
+    indicesAmongstPopulatedBitsUnfoldl,
+  )
 where
 
-import PrimitiveExtras.Prelude hiding (traverse_, insert, null, empty, singleton)
-import PrimitiveExtras.Types
 import qualified DeferredFolds.Unfoldl as Unfoldl
-
+import PrimitiveExtras.Prelude hiding (empty, insert, null, singleton, traverse_)
+import PrimitiveExtras.Types
 
 deriving instance Eq Bitmap
 
@@ -42,6 +40,7 @@ allBitsList :: [Int]
 allBitsList = [0 .. maxBit]
 
 -- * Constructors
+
 -------------------------
 
 {-# INLINE empty #-}
@@ -66,13 +65,14 @@ indexList = Bitmap . foldr (.|.) 0 . map bit
 
 {-# INLINE boolList #-}
 boolList :: [Bool] -> Bitmap
-boolList = Bitmap . foldr (.|.) 0 . zipWith (\ index -> bool 0 (bit index)) allBitsList
+boolList = Bitmap . foldr (.|.) 0 . zipWith (\index -> bool 0 (bit index)) allBitsList
 
 {-# INLINE pair #-}
 pair :: Int -> Int -> Bitmap
 pair i1 i2 = Bitmap (bit i1 .|. bit i2)
 
 -- * Accessors
+
 -------------------------
 
 -- |
