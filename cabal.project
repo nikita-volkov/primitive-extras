@@ -6,3 +6,4 @@ allow-newer:
   , vector:primitive
   , foldl:primitive
   , deferred-folds:primitive
+  , quickcheck-instances:primitive
