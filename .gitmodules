@@ -1,3 +1,0 @@
-[submodule ".github/workflows"]
-	path = .github/workflows
-	url = https://nikita-volkov@github.com/nikita-volkov/haskell-hackage-lib-github-actions-workflows.git
