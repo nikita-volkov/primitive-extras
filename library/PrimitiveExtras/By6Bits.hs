@@ -155,8 +155,8 @@ onElementAtFocus index (Focus concealA revealA) = Focus concealSsa revealSsa
           Focus.Set a -> Focus.Set (By6Bits (Bitmap.singleton index) (pure a))
           Focus.Remove -> Focus.Leave
     revealSsa (By6Bits indices array) =
-      fmap (fmap aChangeToSsaChange) $
-        if Bitmap.isPopulated index indices
+      fmap (fmap aChangeToSsaChange)
+        $ if Bitmap.isPopulated index indices
           then do
             a <- indexSmallArrayM array (Bitmap.populatedIndex index indices)
             revealA a

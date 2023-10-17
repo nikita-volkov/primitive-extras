@@ -43,9 +43,9 @@ transaction =
 
 maybeList :: Gen [Maybe Int]
 maybeList =
-  replicateM (finiteBitSize (undefined :: Int)) $
-    frequency $
-      [ (4, fmap Just element),
+  replicateM (finiteBitSize (undefined :: Int))
+    $ frequency
+    $ [ (4, fmap Just element),
         (1, pure Nothing)
       ]
 
