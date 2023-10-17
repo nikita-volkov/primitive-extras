@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          primitive-extras
-version:       0.10.1.7
+version:       0.10.1.8
 category:      Primitive
 synopsis:      Extras for the "primitive" library
 homepage:      https://github.com/metrix-ai/primitive-extras
