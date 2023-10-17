@@ -4,7 +4,7 @@ synopsis:      Extras for the "primitive" library
 description:
   Raw collection of extra utiltilies for the "primitive" library.
 
-version:       0.10.1.9
+version:       0.10.1.10
 category:      Primitive
 homepage:      https://github.com/metrix-ai/primitive-extras
 bug-reports:   https://github.com/metrix-ai/primitive-extras/issues
