@@ -1,12 +1,15 @@
 cabal-version: 3.0
 name:          primitive-extras
-version:       0.10.1.7
-category:      Primitive
 synopsis:      Extras for the "primitive" library
+description:
+  Raw collection of extra utiltilies for the "primitive" library.
+
+version:       0.10.1.9
+category:      Primitive
 homepage:      https://github.com/metrix-ai/primitive-extras
 bug-reports:   https://github.com/metrix-ai/primitive-extras/issues
 author:        Nikita Volkov <nikita.y.volkov@mail.ru>
-maintainer:    Metrix.AI Tech Team <tech@metrix.ai>
+maintainer:    Nikita Volkov <nikita.y.volkov@mail.ru>
 copyright:     (c) 2018, Metrix.AI
 license:       MIT
 license-file:  LICENSE

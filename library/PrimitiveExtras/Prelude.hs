@@ -7,28 +7,15 @@ module PrimitiveExtras.Prelude
   )
 where
 
--- base
--------------------------
 import Control.Applicative as Exports
 import Control.Arrow as Exports
 import Control.Category as Exports
 import Control.Concurrent as Exports
 import Control.Exception as Exports
--- profunctors
--------------------------
-
--- deferred-folds
--------------------------
-
--- foldl
--------------------------
 import Control.Foldl as Exports (Fold (..), FoldM (..))
 import Control.Monad as Exports hiding (forM, forM_, mapM, mapM_, msum, sequence, sequence_)
 import Control.Monad.Fix as Exports hiding (fix)
 import Control.Monad.IO.Class as Exports
--- primitive
--------------------------
-
 import Control.Monad.Primitive as Exports
 import Control.Monad.ST as Exports
 import Data.Bits as Exports
@@ -42,7 +29,7 @@ import Data.Either as Exports
 import Data.Fixed as Exports
 import Data.Foldable as Exports
 import Data.Function as Exports hiding (id, (.))
-import Data.Functor as Exports
+import Data.Functor as Exports hiding (unzip)
 import Data.Functor.Identity as Exports
 import Data.IORef as Exports
 import Data.Int as Exports
@@ -52,8 +39,6 @@ import Data.Maybe as Exports
 import Data.Monoid as Exports hiding (First (..), Last (..))
 import Data.Ord as Exports
 import Data.Primitive as Exports
--- primitive-unlifted
--------------------------
 import Data.Primitive.Unlifted.Array as Exports
 import Data.Primitive.Unlifted.Class as Exports
 import Data.Profunctor.Choice as Exports
@@ -71,8 +56,6 @@ import Data.Word as Exports
 import Debug.Trace as Exports
 import DeferredFolds.Unfoldl as Exports (Unfoldl (..))
 import DeferredFolds.UnfoldlM as Exports (UnfoldlM (..))
--- focus
--------------------------
 import Focus as Exports (Focus (..))
 import Foreign.ForeignPtr as Exports
 import Foreign.Ptr as Exports
@@ -82,8 +65,6 @@ import GHC.Conc as Exports hiding (threadWaitRead, threadWaitReadSTM, threadWait
 import GHC.Exts as Exports (groupWith, inline, lazy, sortWith)
 import GHC.Generics as Exports (Generic)
 import GHC.IO.Exception as Exports
--- list-t
--------------------------
 import ListT as Exports (ListT (..))
 import Numeric as Exports
 import System.Environment as Exports
