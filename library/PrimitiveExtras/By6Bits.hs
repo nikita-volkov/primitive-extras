@@ -141,7 +141,7 @@ elementsUnfoldlM :: (Monad m) => By6Bits a -> UnfoldlM m a
 elementsUnfoldlM (By6Bits _ array) = SmallArray.elementsUnfoldlM array
 
 {-# INLINE elementsListT #-}
-elementsListT :: By6Bits a -> ListT STM a
+elementsListT :: Monad m => By6Bits a -> ListT m a
 elementsListT (By6Bits _ array) = SmallArray.elementsListT array
 
 {-# INLINE onElementAtFocus #-}
