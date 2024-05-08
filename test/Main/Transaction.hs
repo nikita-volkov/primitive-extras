@@ -9,7 +9,8 @@ import qualified Focus
 import qualified PrimitiveExtras.By6Bits as By6Bits
 import Prelude
 
-data Transaction element = forall result.
+data Transaction element
+  = forall result.
   (Show result, Eq result) =>
   Transaction
   { name :: Text,
