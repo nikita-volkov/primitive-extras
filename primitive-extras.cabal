@@ -6,8 +6,8 @@ description:
 
 version:       0.10.1.10
 category:      Primitive
-homepage:      https://github.com/metrix-ai/primitive-extras
-bug-reports:   https://github.com/metrix-ai/primitive-extras/issues
+homepage:      https://github.com/nikita-volkov/primitive-extras
+bug-reports:   https://github.com/nikita-volkov/primitive-extras/issues
 author:        Nikita Volkov <nikita.y.volkov@mail.ru>
 maintainer:    Nikita Volkov <nikita.y.volkov@mail.ru>
 copyright:     (c) 2018, Metrix.AI
@@ -16,7 +16,7 @@ license-file:  LICENSE
 
 source-repository head
   type:     git
-  location: git://github.com/metrix-ai/primitive-extras.git
+  location: git://github.com/nikita-volkov/primitive-extras.git
 
 library
   hs-source-dirs:     library
