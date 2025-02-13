@@ -4,7 +4,7 @@ synopsis: Extras for the "primitive" library
 description:
   Raw collection of extra utiltilies for the "primitive" library.
 
-version: 0.10.2.1
+version: 0.10.2.2
 category: Primitive
 homepage: https://github.com/nikita-volkov/primitive-extras
 bug-reports: https://github.com/nikita-volkov/primitive-extras/issues
